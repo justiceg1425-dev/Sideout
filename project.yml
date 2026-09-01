@@ -1,0 +1,88 @@
+name: Sideout
+options:
+  bundleIdPrefix: com.sideout
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+  createIntermediateGroups: true
+
+packages:
+  SideoutEngine:
+    path: Packages/SideoutEngine
+
+targets:
+  Sideout:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sideout
+      - path: Shared
+    dependencies:
+      - package: SideoutEngine
+      - target: "Sideout Watch App"
+        embed: true
+    info:
+      path: Sideout/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sideout.app
+        PRODUCT_NAME: Sideout
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.9"
+
+  "Sideout Watch App":
+    type: application
+    platform: watchOS
+    sources:
+      - path: Sideout Watch App
+      - path: Shared
+    dependencies:
+      - package: SideoutEngine
+    info:
+      path: Sideout Watch App/Info.plist
+      properties:
+        WKApplication: true
+        WKRunsIndependentlyOfCompanionApp: true
+        WKCompanionAppBundleIdentifier: com.sideout.app
+        NSHealthShareUsageDescription: "Sideout logs each game as a workout so you can see it in Health."
+        NSHealthUpdateUsageDescription: "Sideout logs each game as a workout so you can see it in Health."
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    entitlements:
+      path: "Sideout Watch App/SideoutWatchApp.entitlements"
+      properties:
+        com.apple.developer.healthkit: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sideout.app.watchkitapp
+        PRODUCT_NAME: "Sideout Watch App"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "4"
+        SWIFT_VERSION: "5.9"
+        SDKROOT: watchos
+        WATCHOS_DEPLOYMENT_TARGET: "10.0"
+
+schemes:
+  Sideout:
+    build:
+      targets:
+        Sideout: all
+    run:
+      config: Debug
+  "Sideout Watch App":
+    build:
+      targets:
+        "Sideout Watch App": all
+    run:
+      config: Debug

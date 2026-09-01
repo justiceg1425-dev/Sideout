@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body { margin:0; background:#EFEDE9; }
+  a { color:#0A6C5C; } a:hover { color:#084C41; }
+</style>
+</helmet>
+
+<div style="font-family:-apple-system,'SF Pro Text','Helvetica Neue',system-ui,sans-serif; color:#1A1917; background:#EFEDE9; padding:64px 72px 120px; display:flex; flex-direction:column; gap:88px; min-width:1720px;">
+
+  <div style="display:flex; flex-direction:column; gap:14px; max-width:820px;">
+    <div style="font-size:12px; letter-spacing:1.6px; text-transform:uppercase; color:#8A8578; font-weight:600;">Design spec · watchOS + iOS</div>
+    <div style="font-size:44px; font-weight:700; letter-spacing:-1.2px; line-height:1.05;">Pickleball scorekeeper</div>
+    <div style="font-size:16px; line-height:1.55; color:#4A463E; text-wrap:pretty;">Watch screens are drawn at true scale — 176 × 215 pt, the 41mm canvas. Phone screens at 852 × 393 pt landscape and 393 × 852 pt portrait. Every measurement on this page is a point value you can type straight into SwiftUI. Zoom in.</div>
+  </div>
+
+  <!-- ─────────── SERVE INDICATOR ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">01</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">The serve bar</div>
+      <div style="font-size:15px; color:#6B665C;">Three dimensions, no legend, no reliance on hue.</div>
+    </div>
+
+    <div style="display:flex; gap:56px; align-items:flex-start; flex-wrap:wrap;">
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="width:352px; height:430px; background:#000; border-radius:64px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:28px 0 36px;">
+          <div style="display:flex; justify-content:space-between; padding:0 32px; font-size:20px; letter-spacing:2px; font-weight:600; color:#6E6E73;"><div>US</div><div style="color:#FFB020;">●</div><div>THEM</div></div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:20px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:192px; line-height:0.8; font-weight:700; letter-spacing:-8px; color:#FFFFFF; font-variant-numeric:tabular-nums;">5</div>
+                <div style="width:166px; display:flex; justify-content:flex-end; gap:8px;">
+                  <div style="width:30px; height:16px; background:#FFB020; border-radius:3px;"></div>
+                  <div style="width:30px; height:16px; background:#FFB020; border-radius:3px;"></div>
+                </div>
+              </div>
+              <div style="width:20px; display:flex; justify-content:center;"><div style="width:2px; height:170px; background:#242426;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:20px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:192px; line-height:0.8; font-weight:700; letter-spacing:-8px; color:#5B5B60; font-variant-numeric:tabular-nums;">3</div>
+                <div style="width:166px; height:16px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:13px; color:#8A8578; letter-spacing:0.4px;">2× · side-out doubles · we serve · second server · odd score, left court</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:26px; max-width:520px;">
+        <div style="display:flex; gap:18px; align-items:flex-start;">
+          <div style="width:26px; height:26px; border-radius:13px; background:#1A1917; color:#EFEDE9; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;">1</div>
+          <div><div style="font-size:17px; font-weight:650; margin-bottom:4px;">Which side serves — presence</div><div style="font-size:15px; line-height:1.5; color:#4A463E;">The bar exists only under the serving side. The receiving side's zone is empty. The serving side's digit is pure white; the receiver's drops to #5B5B60. Two channels, both contrast-only.</div></div>
+        </div>
+        <div style="display:flex; gap:18px; align-items:flex-start;">
+          <div style="width:26px; height:26px; border-radius:13px; background:#1A1917; color:#EFEDE9; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;">2</div>
+          <div><div style="font-size:17px; font-weight:650; margin-bottom:4px;">Server 1 or 2 — segment count</div><div style="font-size:15px; line-height:1.5; color:#4A463E;">One solid bar for first server, two segments for second. A shape change large enough to read peripherally, and the only visual event on a rally that advances the server. Singles and rally scoring always draw the solid bar.</div></div>
+        </div>
+        <div style="display:flex; gap:18px; align-items:flex-start;">
+          <div style="width:26px; height:26px; border-radius:13px; background:#1A1917; color:#EFEDE9; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;">3</div>
+          <div><div style="font-size:17px; font-weight:650; margin-bottom:4px;">Court half — horizontal position</div><div style="font-size:15px; line-height:1.5; color:#4A463E;">The bar docks to the right edge of its half when the serving score is even, the left edge when odd. The marker sits where the server stands. Nothing to decode: the picture is a diagram of the court.</div></div>
+        </div>
+        <div style="border-top:1px solid #D6D2C8; padding-top:22px; font-size:15px; line-height:1.55; color:#4A463E;">Amber is redundant throughout. Strip the colour and every dimension still reads: bar present / absent, one piece / two, docked left / right. That is the sunlight test.</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:22px; flex-wrap:wrap; padding-top:8px;">
+      <div style="display:flex; flex-direction:column; gap:10px;"><div style="width:210px; height:52px; background:#000; border-radius:10px; display:flex; align-items:center; padding:0 12px;"><div style="width:186px; display:flex; justify-content:flex-end;"><div style="width:34px; height:10px; background:#FFB020; border-radius:2px;"></div></div></div><div style="font-size:12px; color:#8A8578;">1st server · even · right</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px;"><div style="width:210px; height:52px; background:#000; border-radius:10px; display:flex; align-items:center; padding:0 12px;"><div style="width:186px; display:flex; justify-content:flex-start;"><div style="width:34px; height:10px; background:#FFB020; border-radius:2px;"></div></div></div><div style="font-size:12px; color:#8A8578;">1st server · odd · left</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px;"><div style="width:210px; height:52px; background:#000; border-radius:10px; display:flex; align-items:center; padding:0 12px;"><div style="width:186px; display:flex; justify-content:flex-end; gap:5px;"><div style="width:17px; height:10px; background:#FFB020; border-radius:2px;"></div><div style="width:17px; height:10px; background:#FFB020; border-radius:2px;"></div></div></div><div style="font-size:12px; color:#8A8578;">2nd server · even · right</div></div>
+      <div style="display:flex; flex-direction:column; gap:10px;"><div style="width:210px; height:52px; background:#000; border-radius:10px; display:flex; align-items:center; padding:0 12px;"><div style="width:186px; display:flex; justify-content:flex-start;"><div style="width:34px; height:10px; background:#FFFFFF; border-radius:2px; opacity:0.34;"></div></div></div><div style="font-size:12px; color:#8A8578;">always-on dimmed</div></div>
+    </div>
+  </div>
+
+  <!-- ─────────── WATCH SCREENS ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">02</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">Watch</div>
+      <div style="font-size:15px; color:#6B665C;">176 × 215 pt, true scale. One screen deep, always.</div>
+    </div>
+
+    <div style="display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start;">
+
+      <!-- New game -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">1 · New game</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:16px 12px 14px; box-sizing:border-box;">
+          <div style="font-size:10px; letter-spacing:1.2px; font-weight:600; color:#6E6E73; text-align:center; margin-bottom:8px;">NEW GAME</div>
+          <div style="background:#FFB020; border-radius:14px; padding:9px 12px; display:flex; flex-direction:column; gap:2px;">
+            <div style="font-size:15px; font-weight:700; color:#000; letter-spacing:-0.2px; line-height:1.1;">Same as last time</div>
+            <div style="font-size:10px; color:#000; opacity:0.62; font-weight:600; line-height:1.15;">Side-out · doubles · 11 · we serve</div>
+          </div>
+          <div style="height:1px; background:#242426; margin:8px 2px;"></div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 4px;"><div style="font-size:12px; color:#8E8E93;">Format</div><div style="font-size:12px; font-weight:650; color:#FFF;">Side-out</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 4px;"><div style="font-size:12px; color:#8E8E93;">Players</div><div style="font-size:12px; font-weight:650; color:#FFF;">Doubles</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 4px;"><div style="font-size:12px; color:#8E8E93;">To</div><div style="font-size:12px; font-weight:650; color:#FFF;">11</div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0 4px;"><div style="font-size:12px; color:#8E8E93;">First serve</div><div style="font-size:12px; font-weight:650; color:#FFF;">Us</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">Amber row is the whole screen's job. Four rows below are taps that cycle in place — no pickers, no push.</div>
+      </div>
+
+      <!-- Scoring live -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Scoring · live</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="display:flex; justify-content:space-between; padding:0 18px; font-size:10px; letter-spacing:1.4px; font-weight:600; color:#6E6E73;"><div>US</div><div style="color:#FFB020; font-size:8px;">●</div><div>THEM</div></div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#FFF; font-variant-numeric:tabular-nums;">5</div>
+                <div style="width:83px; display:flex; justify-content:flex-start; gap:4px; padding:0 6px; box-sizing:border-box;"><div style="width:15px; height:9px; background:#FFB020; border-radius:2px;"></div><div style="width:15px; height:9px; background:#FFB020; border-radius:2px;"></div></div>
+              </div>
+              <div style="width:10px; display:flex; justify-content:center;"><div style="width:1px; height:86px; background:#242426;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#5B5B60; font-variant-numeric:tabular-nums;">3</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:10px; letter-spacing:1.2px; color:#48484A; font-weight:600;">TO 11</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">Left half and right half are the two tap regions, full height, 10 pt dead gutter, commit on touch-up.</div>
+      </div>
+
+      <!-- Game point -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Game point</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="display:flex; justify-content:space-between; padding:0 18px; font-size:10px; letter-spacing:1.4px; font-weight:600; color:#6E6E73;"><div>US</div><div style="color:#FFB020; font-size:8px;">●</div><div>THEM</div></div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#FFF; font-variant-numeric:tabular-nums;">10</div>
+                <div style="width:83px; display:flex; justify-content:flex-end; gap:4px; padding:0 6px; box-sizing:border-box;"><div style="width:34px; height:9px; background:#FFB020; border-radius:2px;"></div></div>
+              </div>
+              <div style="width:10px; display:flex; justify-content:center;"><div style="width:1px; height:86px; background:#242426;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#5B5B60; font-variant-numeric:tabular-nums;">4</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:10px; letter-spacing:1.6px; color:#FFB020; font-weight:700;">GAME POINT</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">The TO 11 footer is replaced, not added to. No new element, no layout shift, no extra haptic.</div>
+      </div>
+
+      <!-- Scrubbing -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Crown scrub</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #35C8E8; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="display:flex; gap:3px; justify-content:center; align-items:flex-end; height:12px; margin-bottom:4px;">
+            <div style="width:3px; height:5px; background:#1F5C68; border-radius:1px;"></div><div style="width:3px; height:5px; background:#1F5C68; border-radius:1px;"></div><div style="width:3px; height:5px; background:#1F5C68; border-radius:1px;"></div><div style="width:3px; height:5px; background:#1F5C68; border-radius:1px;"></div><div style="width:3px; height:5px; background:#1F5C68; border-radius:1px;"></div>
+            <div style="width:3px; height:12px; background:#35C8E8; border-radius:1px;"></div>
+            <div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div>
+          </div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#35C8E8; font-variant-numeric:tabular-nums;">4</div>
+                <div style="width:83px; display:flex; justify-content:flex-start; padding:0 6px; box-sizing:border-box;"><div style="width:34px; height:9px; border:1px solid #35C8E8; border-radius:2px; box-sizing:border-box;"></div></div>
+              </div>
+              <div style="width:10px; display:flex; justify-content:center;"><div style="width:1px; height:86px; background:#1F5C68;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#1F5C68; font-variant-numeric:tabular-nums;">3</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:10px; letter-spacing:1.4px; color:#35C8E8; font-weight:700;">3 RALLIES BACK</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">Whole screen goes cyan and hollow — nothing here is live. Ticks are the rally array; the tall one is where you're standing.</div>
+      </div>
+
+      <!-- Scrubbed to start -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Scrubbed to start</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #35C8E8; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="display:flex; gap:3px; justify-content:center; align-items:flex-end; height:12px; margin-bottom:4px;">
+            <div style="width:3px; height:12px; background:#35C8E8; border-radius:1px;"></div>
+            <div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div><div style="width:3px; height:5px; background:#35C8E8; opacity:0.45; border-radius:1px;"></div>
+          </div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#35C8E8; font-variant-numeric:tabular-nums;">0</div>
+                <div style="width:83px; display:flex; justify-content:flex-end; gap:4px; padding:0 6px; box-sizing:border-box;"><div style="width:15px; height:9px; border:1px solid #35C8E8; border-radius:2px; box-sizing:border-box;"></div><div style="width:15px; height:9px; border:1px solid #35C8E8; border-radius:2px; box-sizing:border-box;"></div></div>
+              </div>
+              <div style="width:10px; display:flex; justify-content:center;"><div style="width:1px; height:86px; background:#1F5C68;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#1F5C68; font-variant-numeric:tabular-nums;">0</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:10px; letter-spacing:1.4px; color:#35C8E8; font-weight:700;">START OF GAME</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">0-0-2 drawn honestly: two segments, right court. Crown hits a wall here with a soft detent.</div>
+      </div>
+
+      <!-- Always on -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Always-on, wrist down</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #1A1A1C; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="height:12px; margin-bottom:4px;"></div>
+          <div style="flex:1; display:flex; align-items:center; opacity:0.42;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:600; letter-spacing:-4px; color:#FFF; font-variant-numeric:tabular-nums;">5</div>
+                <div style="width:83px; display:flex; justify-content:flex-start; gap:4px; padding:0 6px; box-sizing:border-box;"><div style="width:15px; height:9px; background:#FFF; border-radius:2px;"></div><div style="width:15px; height:9px; background:#FFF; border-radius:2px;"></div></div>
+              </div>
+              <div style="width:10px;"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:600; letter-spacing:-4px; color:#4A4A4E; font-variant-numeric:tabular-nums;">3</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="height:12px;"></div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">Chrome, hairline and amber all drop. Score and serve bar survive at 42%. Weight steps 700 → 600 to cut lit pixels.</div>
+      </div>
+
+      <!-- Phone unreachable -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">2 · Phone unreachable</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:14px 0 12px; box-sizing:border-box;">
+          <div style="display:flex; justify-content:space-between; padding:0 18px; font-size:10px; letter-spacing:1.4px; font-weight:600; color:#6E6E73;"><div>US</div><div style="width:7px; height:7px; border:1px solid #6E6E73; border-radius:4px; margin-top:2px;"></div><div>THEM</div></div>
+          <div style="flex:1; display:flex; align-items:center;">
+            <div style="width:100%; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#FFF; font-variant-numeric:tabular-nums;">7</div>
+                <div style="width:83px; display:flex; justify-content:flex-start; padding:0 6px; box-sizing:border-box;"><div style="width:34px; height:9px; background:#FFB020; border-radius:2px;"></div></div>
+              </div>
+              <div style="width:10px; display:flex; justify-content:center;"><div style="width:1px; height:86px; background:#242426;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:11px;">
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:96px; line-height:0.8; font-weight:700; letter-spacing:-4px; color:#5B5B60; font-variant-numeric:tabular-nums;">6</div>
+                <div style="width:83px; height:9px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:10px; letter-spacing:1.2px; color:#48484A; font-weight:600;">TO 11</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">The only change in the entire app: the filled link dot becomes a hollow ring. No banner, no colour, no alert. Scoring is unaffected and the design says so by not reacting.</div>
+      </div>
+
+      <!-- Game over -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">3 · Game over</div>
+        <div style="width:176px; height:215px; background:#000; border-radius:34px; border:1px solid #2C2C2E; overflow:hidden; display:flex; flex-direction:column; padding:16px 12px 14px; box-sizing:border-box; align-items:center;">
+          <div style="font-size:12px; letter-spacing:1.6px; font-weight:700; color:#FFB020;">WE WON</div>
+          <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:56px; line-height:1; font-weight:700; letter-spacing:-2px; color:#FFF; margin-top:12px; font-variant-numeric:tabular-nums;">11–8</div>
+          <div style="font-size:11px; color:#6E6E73; margin-top:6px; font-weight:500;">22 min · saved to Health</div>
+          <div style="flex:1;"></div>
+          <div style="background:#FFB020; border-radius:13px; padding:10px 0; width:100%; text-align:center; font-size:15px; font-weight:700; color:#000;">Rematch</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:9px; font-weight:600;">Done</div>
+        </div>
+        <div style="font-size:12px; color:#8A8578; width:176px; line-height:1.4;">Rematch is the same 44 pt full-width target as everywhere else. Health acknowledgement is one line of tertiary text.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────── PHONE SCOREBOARD ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">03</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">Phone scoreboard</div>
+      <div style="font-size:15px; color:#6B665C;">852 × 393 pt landscape. Read from the far baseline. No controls.</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:40px;">
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">4 · Live · side-out doubles · they serve, second server, odd score</div>
+        <div style="width:852px; height:393px; background:#0B0B0C; border-radius:44px; overflow:hidden; display:flex; flex-direction:column; box-sizing:border-box; padding:26px 0 20px;">
+          <div style="flex:1; display:flex;">
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;">
+              <div style="font-size:26px; letter-spacing:5px; font-weight:700; color:#5B5B60;">US</div>
+              <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:230px; line-height:0.78; font-weight:700; letter-spacing:-10px; color:#5B5B60; font-variant-numeric:tabular-nums;">6</div>
+              <div style="width:330px; height:22px;"></div>
+            </div>
+            <div style="width:1px; background:#1C1C1E; margin:20px 0;"></div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;">
+              <div style="font-size:26px; letter-spacing:5px; font-weight:700; color:#F2F2F4;">THEM</div>
+              <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:230px; line-height:0.78; font-weight:700; letter-spacing:-10px; color:#FFFFFF; font-variant-numeric:tabular-nums;">7</div>
+              <div style="width:330px; display:flex; justify-content:flex-start; gap:10px;"><div style="width:66px; height:22px; background:#FFB020; border-radius:5px;"></div><div style="width:66px; height:22px; background:#FFB020; border-radius:5px;"></div></div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:17px; letter-spacing:3px; color:#3A3A3C; font-weight:700;">SIDE-OUT · TO 11 · WIN BY 2</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:40px; flex-wrap:wrap;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">4 · Side out — 1.4 s band</div>
+          <div style="width:426px; height:197px; background:#0B0B0C; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; box-sizing:border-box; padding:13px 0 0;">
+            <div style="flex:1; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#F2F2F4;">US</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#FFF; font-variant-numeric:tabular-nums;">6</div>
+                <div style="width:165px; display:flex; justify-content:flex-end;"><div style="width:33px; height:11px; background:#FFB020; border-radius:3px;"></div></div>
+              </div>
+              <div style="width:1px; background:#1C1C1E; margin:10px 0;"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#5B5B60;">THEM</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#5B5B60; font-variant-numeric:tabular-nums;">7</div>
+                <div style="width:165px; height:11px;"></div>
+              </div>
+            </div>
+            <div style="background:#FFB020; padding:9px 0; text-align:center; font-size:24px; letter-spacing:5px; font-weight:800; color:#000;">SIDE OUT</div>
+          </div>
+          <div style="font-size:12px; color:#8A8578; width:426px; line-height:1.4;">Drawn at ½ scale. The band rises from the bottom edge as the serve bar travels across the divider; both settle together, band retracts after 1.4 s.</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">4 · Watch not heard from · 1:12</div>
+          <div style="width:426px; height:197px; background:#0B0B0C; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; box-sizing:border-box; padding:0 0 10px;">
+            <div style="background:#1C1508; padding:6px 0; text-align:center; font-size:11px; letter-spacing:2px; font-weight:700; color:#C98A18;">LAST HEARD FROM WATCH 1:12 AGO</div>
+            <div style="flex:1; display:flex; opacity:0.45;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#F2F2F4;">US</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#FFF; font-variant-numeric:tabular-nums;">6</div>
+                <div style="width:165px; display:flex; justify-content:flex-end;"><div style="width:33px; height:11px; background:#FFB020; border-radius:3px;"></div></div>
+              </div>
+              <div style="width:1px; background:#1C1C1E; margin:10px 0;"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#5B5B60;">THEM</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#5B5B60; font-variant-numeric:tabular-nums;">4</div>
+                <div style="width:165px; height:11px;"></div>
+              </div>
+            </div>
+            <div style="text-align:center; font-size:9px; letter-spacing:1.6px; color:#3A3A3C; font-weight:700;">SIDE-OUT · TO 11 · WIN BY 2</div>
+          </div>
+          <div style="font-size:12px; color:#8A8578; width:426px; line-height:1.4;">Appears at 45 s of silence. Score dims to 45% — visibly not current, still readable, never blanked or replaced by a spinner.</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">4 · Game point, teens, hard cap</div>
+          <div style="width:426px; height:197px; background:#0B0B0C; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; box-sizing:border-box; padding:13px 0 10px;">
+            <div style="flex:1; display:flex;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#FFB020;">US · GAME POINT</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#FFF; font-variant-numeric:tabular-nums;">20</div>
+                <div style="width:165px; display:flex; justify-content:flex-end;"><div style="width:33px; height:11px; background:#FFB020; border-radius:3px;"></div></div>
+              </div>
+              <div style="width:1px; background:#1C1C1E; margin:10px 0;"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;">
+                <div style="font-size:13px; letter-spacing:2.5px; font-weight:700; color:#5B5B60;">THEM</div>
+                <div style="font-family:'SF Pro Rounded',-apple-system,system-ui,sans-serif; font-size:104px; line-height:0.78; font-weight:700; letter-spacing:-5px; color:#5B5B60; font-variant-numeric:tabular-nums;">19</div>
+                <div style="width:165px; height:11px;"></div>
+              </div>
+            </div>
+            <div style="text-align:center; font-size:9px; letter-spacing:1.6px; color:#3A3A3C; font-weight:700;">SIDE-OUT · TO 21 · CAP 25</div>
+          </div>
+          <div style="font-size:12px; color:#8A8578; width:426px; line-height:1.4;">Two digits keep the same box: tabular figures, tracking tightens −10 → −14 pt, box never reflows. Game point rides on the team label; nothing new appears.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── PHONE SETUP ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">04</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">Phone setup &amp; settings</div>
+      <div style="font-size:15px; color:#6B665C;">393 × 852 pt portrait. Arm's length, standard iOS type scale.</div>
+    </div>
+
+    <div style="display:flex; gap:44px; flex-wrap:wrap; align-items:flex-start;">
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">5 · Setup</div>
+        <div style="width:393px; height:852px; background:#000; border-radius:48px; overflow:hidden; box-sizing:border-box; padding:58px 0 34px; display:flex; flex-direction:column;">
+          <div style="padding:0 20px 18px;"><div style="font-size:34px; font-weight:700; color:#FFF; letter-spacing:-0.6px;">New game</div></div>
+
+          <div style="padding:0 20px;"><div style="background:#FFB020; border-radius:16px; padding:16px 18px;"><div style="font-size:17px; font-weight:700; color:#000;">Start — same as last time</div><div style="font-size:14px; color:#000; opacity:0.6; font-weight:600; margin-top:2px;">Side-out · doubles · 11 · win by 2</div></div></div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:26px 20px 8px;">FORMAT</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Scoring</div><div style="display:flex; background:#2C2C2E; border-radius:9px; padding:2px;"><div style="font-size:14px; font-weight:650; color:#000; background:#FFF; border-radius:7px; padding:5px 12px;">Side-out</div><div style="font-size:14px; font-weight:600; color:#8E8E93; padding:5px 12px;">Rally</div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Players</div><div style="display:flex; background:#2C2C2E; border-radius:9px; padding:2px;"><div style="font-size:14px; font-weight:600; color:#8E8E93; padding:5px 12px;">Singles</div><div style="font-size:14px; font-weight:650; color:#000; background:#FFF; border-radius:7px; padding:5px 12px;">Doubles</div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Points to win</div><div style="display:flex; background:#2C2C2E; border-radius:9px; padding:2px;"><div style="font-size:14px; font-weight:650; color:#000; background:#FFF; border-radius:7px; padding:5px 14px;">11</div><div style="font-size:14px; font-weight:600; color:#8E8E93; padding:5px 14px;">15</div><div style="font-size:14px; font-weight:600; color:#8E8E93; padding:5px 14px;">21</div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Hard cap at 15</div><div style="width:51px; height:31px; background:#2C2C2E; border-radius:16px; padding:2px; box-sizing:border-box;"><div style="width:27px; height:27px; background:#FFF; border-radius:14px;"></div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">First serve</div><div style="display:flex; background:#2C2C2E; border-radius:9px; padding:2px;"><div style="font-size:14px; font-weight:650; color:#000; background:#FFF; border-radius:7px; padding:5px 16px;">Us</div><div style="font-size:14px; font-weight:600; color:#8E8E93; padding:5px 16px;">Them</div></div></div>
+          </div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:26px 20px 8px;">TEAMS</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Our name</div><div style="font-size:17px; color:#8E8E93;">Us</div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px;"><div style="font-size:17px; color:#FFF;">Their name</div><div style="font-size:17px; color:#8E8E93;">Them</div></div>
+          </div>
+
+          <div style="flex:1;"></div>
+          <div style="padding:0 20px;"><div style="background:#1C1C1E; border-radius:16px; padding:15px; text-align:center; font-size:17px; font-weight:650; color:#FFF;">Start game</div></div>
+          <div style="text-align:center; font-size:13px; color:#48484A; margin-top:14px; font-weight:500;">Watch connected · JBL Flip 6</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#8A8578;">5 · Settings</div>
+        <div style="width:393px; height:852px; background:#000; border-radius:48px; overflow:hidden; box-sizing:border-box; padding:58px 0 34px; display:flex; flex-direction:column;">
+          <div style="padding:0 20px 18px;"><div style="font-size:34px; font-weight:700; color:#FFF; letter-spacing:-0.6px;">Settings</div></div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:0 20px 7px;">VOICE</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Voice</div><div style="font-size:17px; color:#8E8E93;">Umpire · male</div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="padding:11px 16px; display:flex; flex-direction:column; gap:9px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:17px; color:#FFF;">Volume</div><div style="font-size:17px; color:#8E8E93;">80%</div></div><div style="height:4px; background:#2C2C2E; border-radius:2px; display:flex; align-items:center;"><div style="width:80%; height:4px; background:#FFF; border-radius:2px;"></div><div style="width:22px; height:22px; background:#FFF; border-radius:11px; margin-left:-11px;"></div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Test callout</div><div style="font-size:17px; color:#FFB020; font-weight:600;">Play</div></div>
+          </div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:18px 20px 7px;">ANNOUNCE</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Every rally</div><div style="font-size:19px; color:#FFB020; font-weight:700;">✓</div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Score changes and side-outs only</div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Announce game point</div><div style="width:51px; height:31px; background:#2C2C2E; border-radius:16px; padding:2px; box-sizing:border-box; display:flex; justify-content:flex-start;"><div style="width:27px; height:27px; background:#8E8E93; border-radius:14px;"></div></div></div>
+          </div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:18px 20px 7px;">AUDIO OUTPUT</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Output</div><div style="font-size:17px; color:#8E8E93;">JBL Flip 6</div></div>
+          </div>
+          <div style="margin:10px 20px 0; background:#1C1508; border-radius:12px; padding:11px 14px;"><div style="font-size:15px; color:#C98A18; font-weight:600; line-height:1.35;">No Bluetooth speaker. Callouts will play through the phone.</div></div>
+
+          <div style="font-size:13px; letter-spacing:0.6px; color:#8E8E93; font-weight:600; padding:18px 20px 7px;">SCOREBOARD</div>
+          <div style="background:#1C1C1E; margin:0 20px; border-radius:14px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Keep screen awake</div><div style="width:51px; height:31px; background:#FFB020; border-radius:16px; padding:2px; box-sizing:border-box; display:flex; justify-content:flex-end;"><div style="width:27px; height:27px; background:#FFF; border-radius:14px;"></div></div></div>
+            <div style="height:1px; background:#2C2C2E; margin-left:16px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:11px 16px;"><div style="font-size:17px; color:#FFF;">Announce missed rallies on reconnect</div><div style="font-size:17px; color:#8E8E93;">Latest only</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:22px; max-width:440px; padding-top:34px;">
+        <div style="font-size:17px; font-weight:650;">Reconnection</div>
+        <div style="font-size:15px; line-height:1.55; color:#4A463E;">The phone replays state, not events. When several rallies arrive at once the scoreboard jumps straight to current and the voice speaks the latest callout only — never a queue of stale scores over a live point. If the gap crossed a side-out, the "Side out" prefix is dropped; it describes a moment that has already passed. Default is <b>Latest only</b>; <b>Nothing</b> is the alternative. There is no "announce all".</div>
+        <div style="font-size:17px; font-weight:650; padding-top:6px;">Speaker not connected</div>
+        <div style="font-size:15px; line-height:1.55; color:#4A463E;">Stated once, in setup, as a fact rather than an error, and never again mid-game. Audio falls back to the phone speaker; the scoreboard says nothing about it. Losing the speaker mid-game is silent — the scoreboard is still doing its job.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── FEEDBACK MATRIX ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">05</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">Feedback matrix</div>
+      <div style="font-size:15px; color:#6B665C;">Three outcomes, four channels. No two rows share a signature in any channel.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:172px 1fr 1fr 1fr; gap:1px; background:#D6D2C8; border:1px solid #D6D2C8; max-width:1500px;">
+      <div style="background:#E4E1DA; padding:14px 16px; font-size:12px; font-weight:700; letter-spacing:1px; color:#6B665C;">CHANNEL</div>
+      <div style="background:#E4E1DA; padding:14px 16px; font-size:13px; font-weight:700;">Point scored</div>
+      <div style="background:#E4E1DA; padding:14px 16px; font-size:13px; font-weight:700;">Serve advances 1 → 2</div>
+      <div style="background:#E4E1DA; padding:14px 16px; font-size:13px; font-weight:700;">Side out</div>
+
+      <div style="background:#F7F5F1; padding:16px; font-size:13px; font-weight:650;">Watch, visual</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">Digit swaps with a 140 ms vertical roll and a 1.0 → 1.08 → 1.0 scale punch. Serve bar hops to the other edge of its half, 180 ms spring. Nothing else moves.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">Digits do not move at all. The single bar splits into two segments in place, 200 ms — the gap opens from the centre. This is the only screen event, so it cannot be mistaken for a point.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">The bar travels the full width of the screen, across the gutter, to the other side's half, 320 ms ease-out — the largest motion in the app. Digit brightness swaps with it. Arriving bar is always a single segment.</div>
+
+      <div style="background:#F7F5F1; padding:16px; font-size:13px; font-weight:650;">Phone, visual</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">Same roll and punch at scoreboard scale, 160 ms. Serve bar hops edges within its panel.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">Bar splits into two segments. A 17 pt <b>SECOND SERVER</b> label fades in under the footer for 1.4 s.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">Bar crosses the divider into the other panel, 380 ms. Amber <b>SIDE OUT</b> band rises from the bottom edge, holds 1.4 s, retracts.</div>
+
+      <div style="background:#F7F5F1; padding:16px; font-size:13px; font-weight:650;">Haptic</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;"><code style="font-size:13px;">.success</code> — one crisp rising tap. Short, final, the reward beat.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;"><code style="font-size:13px;">.directionUp</code> — two light taps, 70 ms apart. Two taps for second server; the count is the meaning.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;"><code style="font-size:13px;">.retry</code> — three firm taps, longer and heavier. Reads as a handover even in a pocket.</div>
+
+      <div style="background:#F7F5F1; padding:16px; font-size:13px; font-weight:650;">Spoken</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">"Five, three, two." Serving score, receiving score, server number. Two numbers in singles and rally.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">"Five, three, two." Identical numbers to the previous callout except the third — which is the whole point, and why the haptic and the bar carry the load.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#3A362E;">"Side out. Three, five, one." Prefix first, then the score from the new serving side's perspective — so the numbers audibly flip.</div>
+
+      <div style="background:#F7F5F1; padding:16px; font-size:13px; font-weight:650;">Fires when</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#6B665C;">Serving side won the rally.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#6B665C;">Receiving side won, doubles side-out, server was 1.</div>
+      <div style="background:#FFF; padding:16px; font-size:14px; line-height:1.5; color:#6B665C;">Receiving side won, and server was 2 — or singles, or the opening 0-0-2 server.</div>
+    </div>
+
+    <div style="font-size:15px; line-height:1.55; color:#4A463E; max-width:720px;">Haptics fire on the watch the instant the tap commits, from the watch's own copy of the engine. They never wait on the phone. If the phone is unreachable the felt experience is unchanged and only the voice is missing.</div>
+  </div>
+
+  <!-- ─────────── RATIONALES ─────────── -->
+  <div style="display:flex; flex-direction:column; gap:28px;">
+    <div style="display:flex; align-items:baseline; gap:16px; border-bottom:1px solid #D6D2C8; padding-bottom:12px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; color:#8A8578;">06</div>
+      <div style="font-size:24px; font-weight:650; letter-spacing:-0.4px;">Two rationales</div>
+    </div>
+    <div style="display:flex; gap:64px; flex-wrap:wrap;">
+      <div style="max-width:520px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:18px; font-weight:700;">Why a bar and not a badge</div>
+        <div style="font-size:15px; line-height:1.6; color:#3A362E; text-wrap:pretty;">A badge with "2" in it needs to be read. A bar is seen. Serve state has three dimensions and a badge can only carry them as text, which fails at two seconds, at arm's length, in sun, with a paddle in hand.<br><br>Position, count and presence are pre-attentive: the eye resolves them before it resolves a glyph, and all three survive glare, motion blur and the always-on dimmed state. The bar's horizontal placement is not a symbol for the court half — it is a picture of it, so there is nothing to learn and nothing to forget between games. Amber is decoration; delete it and the display still works.</div>
+      </div>
+      <div style="max-width:520px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:18px; font-weight:700;">Why scrubbing turns the screen cyan</div>
+        <div style="font-size:15px; line-height:1.6; color:#3A362E; text-wrap:pretty;">A history view that looks like the live view is worse than no history view. The player will glance at it mid-argument and read a past score as the current one.<br><br>So the scrub state changes every channel at once: hue swings from amber to cyan, digits go hollow and dim, the tap regions stop accepting input, and a border appears around the whole screen. It is unmistakably a different mode. The tick ladder along the top is the rally array drawn literally — one tick per rally, the tall one is here, dim ticks ahead are the redo tail. Spinning back three and forward two is a physical motion along that ladder.<br><br>Committing is deliberate: the crown stops at the truncation point and a tap on either half resumes live scoring from there, discarding the redo tail. Idle for 6 s snaps back to live untouched — the safe default when the player gets distracted and just starts playing again.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>
