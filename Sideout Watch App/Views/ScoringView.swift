@@ -253,13 +253,14 @@ struct ScoringView: View {
     /// semantics with a fully transparent, non-interactive control are not
     /// something that can be confirmed without a physical Series 9+.
     ///
-    /// `handGestureShortcut` needs watchOS 10 — gated so this app still
-    /// builds and runs down to watchOS 8 (Series 3), where Double Tap
-    /// hardware doesn't exist anyway and this whole control is simply
-    /// absent.
+    /// `handGestureShortcut` needs watchOS 11 (confirmed by a real build
+    /// error — the original 10.0 guess was off by one major version) —
+    /// gated so this app still builds and runs down to watchOS 8
+    /// (Series 3), where Double Tap hardware doesn't exist anyway and
+    /// this whole control is simply absent.
     @ViewBuilder
     private var hiddenDoubleTapButton: some View {
-        if #available(watchOS 10.0, *) {
+        if #available(watchOS 11.0, *) {
             Button {
                 controller.recordRally(wonBy: .a)
             } label: {
