@@ -17,6 +17,16 @@ struct ScoringView: View {
     private var isScrubbing: Bool { controller.isScrubbing }
 
     var body: some View {
+        crownScrubbingContent
+            .sheet(isPresented: $controller.showEndGameMenu) {
+                EndGameMenu()
+            }
+            .animation(.easeOut(duration: 0.14), value: state?.points)
+            .animation(.spring(response: 0.18, dampingFraction: 0.8), value: state?.serverCourtSide)
+            .animation(.easeInOut(duration: 0.2), value: state?.serverNumber)
+    }
+
+    private var screenContent: some View {
         ZStack {
             WColor.bg.ignoresSafeArea()
 
@@ -36,33 +46,61 @@ struct ScoringView: View {
                 .stroke(WColor.scrub, lineWidth: isScrubbing ? 1 : 0)
                 .ignoresSafeArea()
         )
-        .focusable(true)
-        // The parameterized digitalCrownRotation(from:through:by:sensitivity:...)
-        // overload needs a newer watchOS than this app's floor (watchOS 8,
-        // for Series 3 support), so this uses the plain single-binding
-        // form — available since SwiftUI's original watchOS 6 release —
-        // and does the clamping to the valid rally range itself below,
-        // re-syncing the raw binding after every change so it can't drift
-        // past either end while the player keeps turning the crown.
-        .digitalCrownRotation($crownPosition)
-        .onChange(of: crownPosition) { newValue in
-            let maxBack = Double(controller.game?.rallyCount ?? 0)
-            let clamped = min(max(newValue, 0), maxBack)
-            if clamped != crownPosition {
-                crownPosition = clamped
-            }
-            controller.setScrubPosition(Int(clamped.rounded()))
-            armScrubIdleTimeout()
+    }
+
+    /// The parameterized `digitalCrownRotation(from:through:by:sensitivity:
+    /// isContinuous:isHapticFeedbackEnabled:)` overload — native clamping
+    /// with a resistance wall at each end, a tuned sensitivity curve,
+    /// `by: 1` quantized stepping — needs a newer watchOS than this app's
+    /// floor (8.0, for Series 3 support). Rather than give every device
+    /// the reduced fallback, this branches: capable OS versions get the
+    /// full original design, and only pre-watchOS-9 devices fall back to
+    /// the plain single-binding form with hand-rolled clamping below.
+    ///
+    /// The exact version gate here (9.0) is a best guess made without
+    /// Xcode access — verify it once by Option-clicking
+    /// `digitalCrownRotation` in Xcode and checking the `@available` on
+    /// the parameterized overload. If it's wrong, Xcode's error message
+    /// on the `#available` branch will name the correct minimum directly.
+    @ViewBuilder
+    private var crownScrubbingContent: some View {
+        if #available(watchOS 9.0, *) {
+            screenContent
+                .focusable(true)
+                .digitalCrownRotation(
+                    $crownPosition,
+                    from: 0,
+                    through: Double(controller.game?.rallyCount ?? 0),
+                    by: 1,
+                    sensitivity: .medium,
+                    isContinuous: false,
+                    isHapticFeedbackEnabled: false
+                )
+                .onChange(of: crownPosition) { newValue in handleCrownChange(newValue) }
+                .onChange(of: isScrubbing) { scrubbing in if !scrubbing { crownPosition = 0 } }
+        } else {
+            screenContent
+                .focusable(true)
+                .digitalCrownRotation($crownPosition)
+                .onChange(of: crownPosition) { newValue in handleCrownChange(newValue) }
+                .onChange(of: isScrubbing) { scrubbing in if !scrubbing { crownPosition = 0 } }
         }
-        .onChange(of: isScrubbing) { scrubbing in
-            if !scrubbing { crownPosition = 0 }
+    }
+
+    /// Shared by both crown paths above. On the watchOS 9+ path the
+    /// system has already clamped and stepped `newValue`, so the clamp
+    /// here is a no-op that changes nothing; on the fallback path it's
+    /// the only clamping that happens. Either way this re-syncs the raw
+    /// binding after every change so it can't drift past either end
+    /// while the player keeps turning the crown.
+    private func handleCrownChange(_ newValue: Double) {
+        let maxBack = Double(controller.game?.rallyCount ?? 0)
+        let clamped = min(max(newValue, 0), maxBack)
+        if clamped != crownPosition {
+            crownPosition = clamped
         }
-        .sheet(isPresented: $controller.showEndGameMenu) {
-            EndGameMenu()
-        }
-        .animation(.easeOut(duration: 0.14), value: state?.points)
-        .animation(.spring(response: 0.18, dampingFraction: 0.8), value: state?.serverCourtSide)
-        .animation(.easeInOut(duration: 0.2), value: state?.serverNumber)
+        controller.setScrubPosition(Int(clamped.rounded()))
+        armScrubIdleTimeout()
     }
 
     // MARK: - Header

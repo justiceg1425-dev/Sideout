@@ -98,14 +98,19 @@ deliberate pass:
   move+opacity transition keyed to score changes. The handoff also wants
   a 1.0 → 1.08 → 1.0 scale punch, which isn't wired up — that needs a
   proper two-stage spring, tuned live.
-- **Digital Crown scrub direction and sensitivity.** `ScoringView` uses
-  the plain `digitalCrownRotation($binding)` form (the parameterized
-  `from:through:by:sensitivity:` overload needs a newer watchOS than this
-  app's floor) and does its own clamping/rounding in
-  `onChange(of: crownPosition)`. Whether raw rotation-to-rally-step feels
-  right — "one detent back undoes a rally" — needs a real Watch, probably
-  more than one generation of Watch given how differently the plain
-  binding can feel across crown hardware revisions.
+- **Digital Crown scrub direction and sensitivity.** `ScoringView`
+  branches on `#available(watchOS 9.0, *)`: capable devices get the full
+  parameterized `digitalCrownRotation(from:through:by:sensitivity:...)`
+  form (native clamping wall, tuned sensitivity, `by: 1` stepping);
+  watchOS 8 devices (Series 3) fall back to the plain single-binding form
+  with hand-rolled clamping in `handleCrownChange`. **The `9.0` gate is a
+  guess** made without Xcode access — confirm the real minimum by
+  Option-clicking `digitalCrownRotation` in Xcode and checking its
+  `@available`, and fix the version number if it's off (a wrong guess
+  fails loudly as a compile error naming the correct version, not a
+  silent behavior difference). Whether the two paths feel reasonably
+  consistent with each other, and whether "one detent back undoes a
+  rally" holds on both, needs a real Watch of each generation.
 - **Double Tap gesture.** Implemented as a hidden, non-hit-testable
   `Button` with `.handGestureShortcut(.primaryAction)` layered under the
   real touch-up tap regions, so it doesn't compete with them for on-screen
