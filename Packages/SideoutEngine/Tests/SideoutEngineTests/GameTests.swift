@@ -124,13 +124,20 @@ final class GameTests: XCTestCase {
     }
 
     func testHardCapWinsOutrightWithoutMargin() {
+        // Alternating winners keeps the margin at 0 or 1 the whole way, so
+        // this can reach 14-14 without an ordinary win-by-2 firing first —
+        // unlike one side running the score up unopposed, which would hit
+        // the normal win condition (e.g. 12-10) long before ever nearing
+        // the cap.
         let game = Game(settings: GameSettings(format: .rally, players: .doubles, pointsToWin: 11, winBy: 2, hardCap: 15, firstServer: .a))
-        for _ in 0..<10 { game.recordRally(wonBy: .a) }
-        for _ in 0..<14 { game.recordRally(wonBy: .b) }
-        XCTAssertEqual(game.state.points, [10, 14])
+        for _ in 0..<14 {
+            game.recordRally(wonBy: .a)
+            game.recordRally(wonBy: .b)
+        }
+        XCTAssertEqual(game.state.points, [14, 14])
         XCTAssertNil(game.state.winner)
 
-        game.recordRally(wonBy: .b) // 10-15, hits cap outright
+        game.recordRally(wonBy: .b) // 14-15 — only a 1-point margin, but hits the cap outright
         XCTAssertEqual(game.state.winner, .b)
     }
 
@@ -189,8 +196,18 @@ final class GameTests: XCTestCase {
     }
 
     func testMatchPointAtHardCapBoundary() {
+        // Same issue as the hard-cap test above: 14 straight wins for one
+        // side ends the game at 11-0 long before reaching 14. Alternate to
+        // 13-13, then one more so `.a` leads 14-13 (still only a 1-point
+        // margin, so the game isn't over) with `.a` one point from the cap.
         let game = Game(settings: GameSettings(format: .rally, players: .doubles, pointsToWin: 11, winBy: 2, hardCap: 15, firstServer: .a))
-        for _ in 0..<14 { game.recordRally(wonBy: .a) }
+        for _ in 0..<13 {
+            game.recordRally(wonBy: .a)
+            game.recordRally(wonBy: .b)
+        }
+        game.recordRally(wonBy: .a)
+        XCTAssertEqual(game.state.points, [14, 13])
+        XCTAssertNil(game.state.winner)
         XCTAssertEqual(game.pointSignal(for: .a), .matchPoint(for: .a))
     }
 
@@ -209,9 +226,13 @@ final class GameTests: XCTestCase {
     }
 
     func testSpokenCalloutRallyHasNoServerNumberOrSideOutPrefix() {
+        // The assembly rule is "serving score, then receiving score" — not
+        // a fixed team order. `.b` won the rally and now serves under
+        // rally scoring, so `.b`'s score (1) is announced first even
+        // though `.a` is team "us".
         let game = Game(settings: GameSettings(format: .rally, players: .doubles, firstServer: .a))
         game.recordRally(wonBy: .b)
-        XCTAssertEqual(game.spokenCallout(), [.number(0), .number(1)])
+        XCTAssertEqual(game.spokenCallout(), [.number(1), .number(0)])
     }
 
     func testSpokenCalloutOnGameEnd() {
