@@ -23,12 +23,12 @@ final class WorkoutManager: NSObject, ObservableObject {
         guard HKHealthStore.isHealthDataAvailable() else { return }
         let configuration = HKWorkoutConfiguration()
         // .pickleball needs a newer SDK than this app's watchOS 8 floor
-        // (Series 3 support); racquetSports is the closest category on
+        // (Series 3 support); racquetball is the closest category on
         // older watchOS and a harmless Health-app label choice either way.
         if #available(watchOS 9.0, *) {
             configuration.activityType = .pickleball
         } else {
-            configuration.activityType = .racquetSports
+            configuration.activityType = .racquetball
         }
         configuration.locationType = .outdoor
 
