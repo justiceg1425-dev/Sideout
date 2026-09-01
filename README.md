@@ -63,22 +63,28 @@ docs/                      The design brief and handoff this was built
 
 ## What's NOT included — audio clips
 
-The phone speaks from **pre-rendered audio clips**, not text-to-speech
-(the handoff is explicit about this — it keeps callouts short and
-staccato rather than full sentences). `AudioAnnouncer` looks for files at
-`Sideout/AudioClips/<clip>.caf` in the app bundle; if a clip is missing it
-stays silent rather than falling back to speech synthesis.
+The phone speaks from **pre-rendered audio clips**, not a live
+text-to-speech call mid-game (the handoff is explicit about this — it
+keeps callouts short and staccato rather than full sentences).
+`AudioAnnouncer` looks for files at `Sideout/AudioClips/<clip>.caf` in the
+app bundle; if a clip is missing it stays silent rather than guessing.
 
-You need to record and add these yourself — the full list is in
-`SpokenClip.swift` and mirrored in the handoff's copy deck:
+Run `Scripts/generate_audio_clips.sh` on a Mac to generate the full
+vocabulary via the built-in `say` command — see that file's header for
+voice choice and usage. That satisfies the "pre-rendered" requirement
+just as well as a human recording; swap in real recordings later if you
+want a different voice, `AudioAnnouncer` doesn't care where the `.caf`
+files came from. The full clip list is in `SpokenClip.swift` and mirrored
+in the handoff's copy deck:
 
 - Numbers: `zero` through `twenty-five` (one clip each)
 - Words: `side_out`, `game`, `us`, `them`, `game_point`, `zero_zero_two`
 
 Keep each clip trimmed tight (~180–320 ms) with a consistent voice and
-level; the app inserts ~90 ms of silence between clips in a sequence. Add
-them to the `Sideout/AudioClips` group in Xcode as a folder reference (not
-a group) with "Create folder references" so the `subdirectory:` lookup in
+level; the app inserts ~90 ms of silence between clips in a sequence
+(the generation script does this automatically if `sox` is installed).
+Add the output folder to Xcode as a folder reference (not a group) —
+"Create folder references" — so the `subdirectory:` lookup in
 `AudioAnnouncer` resolves.
 
 ## Known gaps to verify on-device
