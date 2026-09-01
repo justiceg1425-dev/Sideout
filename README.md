@@ -98,10 +98,14 @@ deliberate pass:
   move+opacity transition keyed to score changes. The handoff also wants
   a 1.0 → 1.08 → 1.0 scale punch, which isn't wired up — that needs a
   proper two-stage spring, tuned live.
-- **Digital Crown scrub direction and sensitivity.** `ScoringView` binds
-  `digitalCrownRotation` from 0 (live) upward (further back in history).
-  Whether that direction and the `.medium` sensitivity feel right — "one
-  detent back undoes a rally" — needs a real Watch.
+- **Digital Crown scrub direction and sensitivity.** `ScoringView` uses
+  the plain `digitalCrownRotation($binding)` form (the parameterized
+  `from:through:by:sensitivity:` overload needs a newer watchOS than this
+  app's floor) and does its own clamping/rounding in
+  `onChange(of: crownPosition)`. Whether raw rotation-to-rally-step feels
+  right — "one detent back undoes a rally" — needs a real Watch, probably
+  more than one generation of Watch given how differently the plain
+  binding can feel across crown hardware revisions.
 - **Double Tap gesture.** Implemented as a hidden, non-hit-testable
   `Button` with `.handGestureShortcut(.primaryAction)` layered under the
   real touch-up tap regions, so it doesn't compete with them for on-screen
@@ -114,8 +118,17 @@ deliberate pass:
   and Settings screens. Orientation-lock-per-screen is one of the fussier
   corners of UIKit/SwiftUI interop; verify it actually rotates on a
   device.
-- **HealthKit workout type.** Uses `HKWorkoutActivityType.pickleball`.
-  Confirm that's available on your deployment target's SDK.
+- **HealthKit workout type.** Uses `HKWorkoutActivityType.pickleball` when
+  available (watchOS 9+), falling back to `.racquetSports` on watchOS 8.
+- **watchOS 8 / Apple Watch Series 3 support.** The watch target's
+  deployment target is 8.0 specifically so this can install on a Series 3
+  (watchOS 9 dropped Series 3 entirely, so this is as low as it can go).
+  All watchOS-10-only APIs in the watch code (Double Tap's
+  `handGestureShortcut`, `HKWorkoutActivityType.pickleball`) are
+  `#available`-gated. What's *not* verified: whether Xcode 16 still ships
+  the device-support files needed to install/debug on a real watchOS
+  8.8.2 device at all — that's independent of the deployment target
+  setting and is worth checking early in Phase 5, not assuming.
 
 ## What was deliberately decided, not specified
 

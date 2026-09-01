@@ -76,13 +76,28 @@ robotic mid-rally.
 
 Simulator can't tell you if this actually works: Digital Crown scrub
 direction/feel, the three distinct haptic patterns, Double Tap gesture
-(Series 9+), always-on display legibility wrist-down, and whether
-`HKWorkoutSession` actually keeps the app frontmost through a wrist-drop.
-Tune the digit roll/punch animation here too — the handoff deliberately
-left exact spring values to this pass.
+(Series 9+ only — inert on older hardware, not broken), always-on display
+legibility wrist-down (also hardware-dependent — no AOD panel on Series 3
+or 4), and whether `HKWorkoutSession` actually keeps the app frontmost
+through a wrist-drop. Tune the digit roll/punch animation here too — the
+handoff deliberately left exact spring values to this pass.
+
+The watch target's deployment target is 8.0 so it can install on an
+Apple Watch Series 3 as well as newer models — watchOS 9 dropped Series 3
+entirely, so that's the floor. Before assuming a real Series 3 will just
+work: **confirm your Xcode version still ships the device-support files
+for watchOS 8.8.2.** That's independent of the project's deployment
+target setting — an old real device needs Xcode to recognize its exact OS
+build to install/debug on it at all, and very old device-support files do
+eventually get dropped from new Xcode releases. If Xcode refuses to see
+the paired Series 3 as a run destination, that's what's happening; the
+fix at that point is either an older Xcode alongside the current one, or
+accepting Simulator-only testing for pre-Series 9 behavior.
 
 **Exit:** a full game plays with the watch never needing a wake-tap, and
-the AOD state stays readable.
+the AOD state stays readable — tested on whichever generations of Watch
+you actually have, since features (Double Tap, AOD) are genuinely absent
+on older hardware rather than bugs to chase.
 
 ## Phase 6 — Outdoor validation and edge cases
 

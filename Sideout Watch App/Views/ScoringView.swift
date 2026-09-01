@@ -37,20 +37,24 @@ struct ScoringView: View {
                 .ignoresSafeArea()
         )
         .focusable(true)
-        .digitalCrownRotation(
-            $crownPosition,
-            from: 0,
-            through: Double(controller.game?.rallyCount ?? 0),
-            by: 1,
-            sensitivity: .medium,
-            isContinuous: false,
-            isHapticFeedbackEnabled: false
-        )
-        .onChange(of: crownPosition) { _, newValue in
-            controller.setScrubPosition(Int(newValue.rounded()))
+        // The parameterized digitalCrownRotation(from:through:by:sensitivity:...)
+        // overload needs a newer watchOS than this app's floor (watchOS 8,
+        // for Series 3 support), so this uses the plain single-binding
+        // form — available since SwiftUI's original watchOS 6 release —
+        // and does the clamping to the valid rally range itself below,
+        // re-syncing the raw binding after every change so it can't drift
+        // past either end while the player keeps turning the crown.
+        .digitalCrownRotation($crownPosition)
+        .onChange(of: crownPosition) { newValue in
+            let maxBack = Double(controller.game?.rallyCount ?? 0)
+            let clamped = min(max(newValue, 0), maxBack)
+            if clamped != crownPosition {
+                crownPosition = clamped
+            }
+            controller.setScrubPosition(Int(clamped.rounded()))
             armScrubIdleTimeout()
         }
-        .onChange(of: isScrubbing) { _, scrubbing in
+        .onChange(of: isScrubbing) { scrubbing in
             if !scrubbing { crownPosition = 0 }
         }
         .sheet(isPresented: $controller.showEndGameMenu) {
@@ -210,16 +214,24 @@ struct ScoringView: View {
     /// above it. Verify this composition on-device — `handGestureShortcut`
     /// semantics with a fully transparent, non-interactive control are not
     /// something that can be confirmed without a physical Series 9+.
+    ///
+    /// `handGestureShortcut` needs watchOS 10 — gated so this app still
+    /// builds and runs down to watchOS 8 (Series 3), where Double Tap
+    /// hardware doesn't exist anyway and this whole control is simply
+    /// absent.
+    @ViewBuilder
     private var hiddenDoubleTapButton: some View {
-        Button {
-            controller.recordRally(wonBy: .a)
-        } label: {
-            Color.clear
+        if #available(watchOS 10.0, *) {
+            Button {
+                controller.recordRally(wonBy: .a)
+            } label: {
+                Color.clear
+            }
+            .frame(width: 1, height: 1)
+            .allowsHitTesting(false)
+            .handGestureShortcut(.primaryAction)
+            .opacity(isScrubbing ? 0 : 1)
         }
-        .frame(width: 1, height: 1)
-        .allowsHitTesting(false)
-        .handGestureShortcut(.primaryAction)
-        .opacity(isScrubbing ? 0 : 1)
     }
 
     private func armScrubIdleTimeout() {
