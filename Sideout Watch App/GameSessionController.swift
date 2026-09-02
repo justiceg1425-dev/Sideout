@@ -38,9 +38,22 @@ final class GameSessionController: ObservableObject {
         self.connectivity = connectivity
         self.workout = workout
         workout.requestAuthorization()
+        connectivity.onSettingsReceived = { [weak self] settings in
+            self?.applyReceivedSettings(settings)
+        }
     }
 
     // MARK: - Lifecycle
+
+    /// Settings pushed from the phone's Setup screen (team names, above
+    /// all — the watch has no UI of its own to set those). Never
+    /// overwrites a game already in progress; it only affects what the
+    /// *next* game starts with.
+    func applyReceivedSettings(_ settings: GameSettings) {
+        guard game == nil else { return }
+        self.settings = settings
+        SettingsStore.save(settings)
+    }
 
     func startGame(with settings: GameSettings) {
         self.settings = settings

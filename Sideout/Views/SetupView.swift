@@ -69,6 +69,7 @@ struct SetupView: View {
 
                 Button {
                     SettingsStore.save(draft)
+                    appModel.pushSettingsToWatch(draft)
                     appModel.startWatchingScoreboard()
                 } label: {
                     Text("Start game")
@@ -99,6 +100,7 @@ struct SetupView: View {
     private var startCard: some View {
         Button {
             SettingsStore.save(draft)
+            appModel.pushSettingsToWatch(draft)
             appModel.startWatchingScoreboard()
         } label: {
             VStack(alignment: .leading, spacing: 4) {

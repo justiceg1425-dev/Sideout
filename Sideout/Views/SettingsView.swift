@@ -7,10 +7,21 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Settings")
-                    .font(PType.largeTitle)
-                    .tracking(-0.6)
-                    .foregroundStyle(.white)
+                HStack {
+                    Text("Settings")
+                        .font(PType.largeTitle)
+                        .tracking(-0.6)
+                        .foregroundStyle(.white)
+                    Spacer()
+                    // The only path here is a long press on the
+                    // scoreboard, so Done always returns to it — there's
+                    // no other screen a "back" here could mean.
+                    Button("Done") {
+                        appModel.screen = .scoreboard
+                    }
+                    .font(PType.button)
+                    .foregroundStyle(PColor.serve)
+                }
 
                 sectionHeader("VOICE")
                 GroupCard {

@@ -38,6 +38,13 @@ final class PhoneAppModel: ObservableObject {
         screen = .scoreboard
     }
 
+    /// Pushes settings edited on the phone's Setup screen (team names
+    /// above all — the watch has no way to set those itself) to the
+    /// watch, so the *next* game it starts picks them up.
+    func pushSettingsToWatch(_ settings: GameSettings) {
+        connectivity.sendSettings(settings)
+    }
+
     private func handle(_ update: PhoneConnectivityManager.Update) {
         lastOutcome = update.outcome
         announcer.volume = Float(appSettings.volume)

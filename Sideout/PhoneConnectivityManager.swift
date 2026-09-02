@@ -26,6 +26,17 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
     private var staleTimer: Timer?
     private static let staleThreshold: TimeInterval = 45
 
+    /// Pushes settings edited on the phone (team names, in particular —
+    /// the only thing the phone can set that the watch can't) to the
+    /// watch. This is this session's own outgoing application context;
+    /// it doesn't collide with the watch's outgoing context that
+    /// `ConnectivityMessage` arrives through.
+    func sendSettings(_ settings: GameSettings) {
+        guard let session, session.activationState == .activated else { return }
+        guard let dict = try? SettingsSync(settings: settings).asDictionary() else { return }
+        try? session.updateApplicationContext(dict)
+    }
+
     override init() {
         super.init()
         session?.delegate = self

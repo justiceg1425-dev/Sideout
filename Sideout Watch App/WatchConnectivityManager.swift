@@ -10,6 +10,12 @@ import SideoutEngine
 final class WatchConnectivityManager: NSObject, ObservableObject {
     @Published private(set) var isReachable = false
 
+    /// Fires when the phone pushes edited settings (team names, above
+    /// all) via `SettingsSync`. The watch is still the only thing that
+    /// can actually *start* a game, but this is how phone-only settings
+    /// reach it beforehand.
+    var onSettingsReceived: ((GameSettings) -> Void)?
+
     private let session: WCSession? = WCSession.isSupported() ? .default : nil
 
     override init() {
@@ -32,5 +38,10 @@ extension WatchConnectivityManager: WCSessionDelegate {
 
     nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
         Task { @MainActor in self.isReachable = session.isReachable }
+    }
+
+    nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        guard let sync = try? SettingsSync.from(dictionary: applicationContext) else { return }
+        Task { @MainActor in self.onSettingsReceived?(sync.settings) }
     }
 }
