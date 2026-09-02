@@ -74,7 +74,20 @@ struct PhoneRootView: View {
         let mask = orientationMask(for: screen)
         AppDelegate.orientationLock = mask
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: mask)) { _ in }
+
+        // requestGeometryUpdate alone left the device stuck in landscape
+        // after leaving the scoreboard on a real device (unreliable in
+        // Simulator too, just less visibly so). Per Apple's own pairing
+        // for this API, the root view controller also needs to be told
+        // to re-query supportedInterfaceOrientations — without this call
+        // changing AppDelegate.orientationLock updates what's *allowed*
+        // but nothing prompts the system to actually re-evaluate it.
+        if let rootViewController = windowScene.keyWindow?.rootViewController {
+            rootViewController.setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+        windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: mask)) { error in
+            print("Sideout: orientation geometry update failed: \(error)")
+        }
         UIApplication.shared.isIdleTimerDisabled = appModel.appSettings.keepScreenAwake && screen == .scoreboard
     }
 }

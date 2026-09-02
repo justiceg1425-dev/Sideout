@@ -27,19 +27,34 @@ struct SettingsView: View {
                 // testing surfaced it: without this there was no way
                 // back to Setup at all once you'd left it — a dead end
                 // especially before any real game is syncing from the
-                // watch. This is a secondary, less prominent action next
-                // to Done on purpose: Done is the common mid-game case
-                // (glance at settings, get back to the board), this is
-                // the rarer "start over" case. Safe mid-game too — the
+                // watch. Styled as a real navigation row (not plain
+                // caption text, which read as inert on a first pass) so
+                // it's discoverable, but in its own card below Done so it
+                // stays visually secondary — Done is the common mid-game
+                // case (glance at settings, get back to the board), this
+                // is the rarer "start over" case. Safe mid-game too — the
                 // watch ignores pushed settings while a game is already
                 // in progress (see GameSessionController.applyReceivedSettings).
-                Button {
-                    appModel.screen = .setup
-                } label: {
-                    Text("Change format & teams")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(PColor.secondary)
+                GroupCard {
+                    Button {
+                        appModel.screen = .setup
+                    } label: {
+                        HStack {
+                            Text("Change format & teams")
+                                .font(PType.rowLabel)
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(PColor.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 11)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
+                .padding(.top, 16)
                 .padding(.bottom, 12)
 
                 sectionHeader("VOICE")
