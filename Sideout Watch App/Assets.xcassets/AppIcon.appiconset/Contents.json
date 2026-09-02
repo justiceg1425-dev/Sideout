@@ -1,6 +1,6 @@
 {
   "images" : [
-    { "idiom" : "watch-marketing", "scale" : "1x", "size" : "1024x1024" }
+    { "idiom" : "watch-marketing", "scale" : "1x", "size" : "1024x1024", "filename" : "icon-1024.png" }
   ],
   "info" : {
     "author" : "xcode",
