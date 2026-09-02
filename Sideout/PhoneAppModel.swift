@@ -24,7 +24,7 @@ final class PhoneAppModel: ObservableObject {
     let connectivity: PhoneConnectivityManager
     let announcer = AudioAnnouncer()
 
-    init(connectivity: PhoneConnectivityManager = PhoneConnectivityManager()) {
+    init(connectivity: PhoneConnectivityManager) {
         self.connectivity = connectivity
         connectivity.onUpdate = { [weak self] update in
             self?.handle(update)
