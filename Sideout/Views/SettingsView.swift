@@ -23,6 +23,25 @@ struct SettingsView: View {
                     .foregroundStyle(PColor.serve)
                 }
 
+                // Not part of the original brief's flow, added after
+                // testing surfaced it: without this there was no way
+                // back to Setup at all once you'd left it — a dead end
+                // especially before any real game is syncing from the
+                // watch. This is a secondary, less prominent action next
+                // to Done on purpose: Done is the common mid-game case
+                // (glance at settings, get back to the board), this is
+                // the rarer "start over" case. Safe mid-game too — the
+                // watch ignores pushed settings while a game is already
+                // in progress (see GameSessionController.applyReceivedSettings).
+                Button {
+                    appModel.screen = .setup
+                } label: {
+                    Text("Change format & teams")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(PColor.secondary)
+                }
+                .padding(.bottom, 12)
+
                 sectionHeader("VOICE")
                 GroupCard {
                     row("Voice") { Text(appModel.appSettings.voiceName).foregroundStyle(PColor.secondary) }
