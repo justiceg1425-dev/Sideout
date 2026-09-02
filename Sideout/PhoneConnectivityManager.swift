@@ -19,6 +19,12 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
     @Published private(set) var currentState: GameState?
     @Published private(set) var lastHeard: Date?
     @Published private(set) var isStale = false
+    /// True WCSession reachability — distinct from `currentState != nil`,
+    /// which only ever reflects "have we received a game," not whether
+    /// the watch is actually paired and reachable right now. Conflating
+    /// the two was the bug behind Setup's "Watch not connected" label
+    /// showing before any game had ever synced, even with a working pair.
+    @Published private(set) var isReachable = false
 
     var onUpdate: ((Update) -> Void)?
 
@@ -88,9 +94,15 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
 }
 
 extension PhoneConnectivityManager: WCSessionDelegate {
-    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        Task { @MainActor in self.isReachable = session.isReachable }
+    }
     nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
     nonisolated func sessionDidDeactivate(_ session: WCSession) { session.activate() }
+
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        Task { @MainActor in self.isReachable = session.isReachable }
+    }
 
     nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         guard let message = try? ConnectivityMessage.from(dictionary: applicationContext) else { return }

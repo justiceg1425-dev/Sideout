@@ -94,7 +94,7 @@ struct SetupView: View {
 
     private var connectionStatusText: String {
         let output = appModel.appSettings.audioOutputName ?? "phone speaker"
-        return connectivity.currentState != nil ? "Watch connected · \(output)" : "Watch not connected"
+        return connectivity.isReachable ? "Watch connected · \(output)" : "Watch not connected"
     }
 
     private var startCard: some View {
