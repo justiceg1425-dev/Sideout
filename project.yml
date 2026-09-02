@@ -45,6 +45,8 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: P853UYQ9G8
 
   "Sideout Watch App":
     type: application
@@ -78,6 +80,8 @@ targets:
         SWIFT_VERSION: "5.9"
         SDKROOT: watchos
         WATCHOS_DEPLOYMENT_TARGET: "8.0"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: P853UYQ9G8
 
 schemes:
   Sideout:
