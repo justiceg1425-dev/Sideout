@@ -82,6 +82,17 @@ targets:
         WATCHOS_DEPLOYMENT_TARGET: "8.0"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: P853UYQ9G8
+        # Series 3 (S3 chip) needs armv7k; every watch since Series 4 uses
+        # arm64_32. Without armv7k explicitly listed, Xcode's default only
+        # builds arm64_32 -- installs fine on newer watches and Simulator,
+        # but is a genuinely different, incompatible binary format on a
+        # Series 3, which is very likely what "unsupported architecture"
+        # actually meant. Untested whether Xcode 26's toolchain can still
+        # emit armv7k at all -- Apple has a history of eventually dropping
+        # compiler support for old architectures entirely.
+        ARCHS: "armv7k arm64_32"
+        VALID_ARCHS: "armv7k arm64_32"
+        ONLY_ACTIVE_ARCH: NO
 
 schemes:
   Sideout:
