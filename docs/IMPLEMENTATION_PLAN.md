@@ -82,17 +82,43 @@ or 4), and whether `HKWorkoutSession` actually keeps the app frontmost
 through a wrist-drop. Tune the digit roll/punch animation here too — the
 handoff deliberately left exact spring values to this pass.
 
-The watch target's deployment target is 8.0 so it can install on an
+The watch target's deployment target is 8.0 so the *code* supports an
 Apple Watch Series 3 as well as newer models — watchOS 9 dropped Series 3
-entirely, so that's the floor. Before assuming a real Series 3 will just
-work: **confirm your Xcode version still ships the device-support files
-for watchOS 8.8.2.** That's independent of the project's deployment
-target setting — an old real device needs Xcode to recognize its exact OS
-build to install/debug on it at all, and very old device-support files do
-eventually get dropped from new Xcode releases. If Xcode refuses to see
-the paired Series 3 as a run destination, that's what's happening; the
-fix at that point is either an older Xcode alongside the current one, or
-accepting Simulator-only testing for pre-Series 9 behavior.
+entirely, so that's the floor. **Getting a real Series 3 unit running,
+however, turned out not to be achievable** — worth recording exactly what
+was tried, so this doesn't get re-attempted from scratch later:
+
+1. Xcode's device-support cache lacked watchOS 8.8.2 symbols; installing
+   an older Xcode to prime it hit its own wall (Xcode 14.x refuses to run
+   on modern macOS at all; the priming eventually did succeed, but only
+   after restoring the current Xcode overwrote a genuinely different
+   problem into existence — see #2).
+2. Restoring the current Xcode after an accidental overwrite (installing
+   an older Xcode by dragging it into `/Applications` under the same name
+   silently replaced the working one) got the Watch showing as a real
+   destination, but the wireless debug tunnel to it fails with a mix of
+   `NWError`/"connection reset" errors that persisted through every
+   standard fix (unlock, same Wi-Fi, reboot all three devices).
+3. TestFlight was considered as a way to bypass Xcode's tunnel entirely,
+   but has its own confirmed, unresolved Apple bug for exactly this
+   combination: Series 3 + watchOS 8 companion-app installs hang
+   indefinitely or crash (reported on Apple's developer forums, no fix
+   published). Not attempted, given that.
+4. The clearest root cause surfaced last: Xcode reported "unsupported
+   architecture" outright. Series 3's S3 chip needs `armv7k`; every watch
+   since Series 4 uses `arm64_32`, and the default build only produces
+   the latter. Adding `armv7k` to `ARCHS`/`VALID_ARCHS` didn't fix it —
+   the local `SideoutEngine` package failed to resolve for that
+   architecture even after a clean build, which reads as the current
+   toolchain no longer fully supporting `armv7k` compilation for a
+   package-based project, not a settings mistake.
+
+Four independent failures across wireless debugging, TestFlight, and the
+build toolchain is old hardware hitting the edges of current tooling
+support from multiple directions at once — not something to keep
+chasing. **The physical Series 3 is Simulator-verified only, and that's
+the accepted end state for this device**, not a gap to revisit unless
+Apple ships new tooling that changes the picture.
 
 **Exit:** a full game plays with the watch never needing a wake-tap, and
 the AOD state stays readable — tested on whichever generations of Watch
