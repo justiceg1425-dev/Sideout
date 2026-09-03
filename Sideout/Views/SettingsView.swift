@@ -108,6 +108,10 @@ struct SettingsView: View {
                         appModel.appSettings.reconnectBehavior = appModel.appSettings.reconnectBehavior == .latestOnly ? .nothing : .latestOnly
                     }
                 }
+
+                #if DEBUG
+                debugSimulationSection
+                #endif
             }
             .padding(.horizontal, PMetric.listMargin)
             .padding(.top, 58)
@@ -175,6 +179,47 @@ struct SettingsView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
     }
+
+    #if DEBUG
+    /// Debug-only: feeds fake watch updates through the real
+    /// PhoneConnectivityManager.apply(_:) path, so the phone's whole
+    /// reaction pipeline can be verified on real hardware without a
+    /// physical watch — see PhoneConnectivityManager.simulateRally.
+    private var debugSimulationSection: some View {
+        Group {
+            sectionHeader("DEBUG — SIMULATE WATCH")
+            GroupCard {
+                Button {
+                    appModel.connectivity.simulateRally(wonBy: .a, settings: SettingsStore.load())
+                } label: {
+                    row("Simulate: Us won rally") {
+                        Image(systemName: "chevron.right").foregroundStyle(PColor.secondary)
+                    }
+                }
+                divider
+                Button {
+                    appModel.connectivity.simulateRally(wonBy: .b, settings: SettingsStore.load())
+                } label: {
+                    row("Simulate: Them won rally") {
+                        Image(systemName: "chevron.right").foregroundStyle(PColor.secondary)
+                    }
+                }
+                divider
+                Button {
+                    appModel.connectivity.resetDebugSimulation()
+                } label: {
+                    row("Reset simulated game") {
+                        EmptyView()
+                    }
+                }
+            }
+            Text("Debug builds only — never ships. Exercises the exact code path a real watch message would, without needing one.")
+                .font(.system(size: 12))
+                .foregroundStyle(PColor.secondary)
+                .padding(.top, 8)
+        }
+    }
+    #endif
 
     private var noSpeakerNote: some View {
         Text("No Bluetooth speaker. Callouts will play through the phone.")

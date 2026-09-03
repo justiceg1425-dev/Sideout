@@ -32,6 +32,32 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
     private var staleTimer: Timer?
     private static let staleThreshold: TimeInterval = 45
 
+    #if DEBUG
+    /// The rally history for `simulateRally`, kept separately from any
+    /// real `game` so a debug session never collides with a real watch
+    /// connecting mid-test.
+    private var debugRallyWinners: [Team] = []
+
+    /// Feeds a fake watch update through the exact same `apply(_:)` path
+    /// a real WCSession delivery uses — so this is a genuine test of the
+    /// reaction pipeline (outcome classification, audio, side-out band,
+    /// staleness), not a separate mock of it. Built to let the real
+    /// end-to-end behavior be verified on real hardware without a
+    /// physical watch, after the physical Series 3 turned out to be
+    /// unreachable by any supported path (see docs/IMPLEMENTATION_PLAN.md).
+    func simulateRally(wonBy team: Team, settings: GameSettings) {
+        debugRallyWinners.append(team)
+        apply(ConnectivityMessage(settings: settings, rallyWinners: debugRallyWinners))
+    }
+
+    /// Starts over with a fresh fake game under new settings.
+    func resetDebugSimulation() {
+        debugRallyWinners = []
+        game = nil
+        currentState = nil
+    }
+    #endif
+
     /// Pushes settings edited on the phone (team names, in particular —
     /// the only thing the phone can set that the watch can't) to the
     /// watch. This is this session's own outgoing application context;
