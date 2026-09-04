@@ -112,13 +112,24 @@ was tried, so this doesn't get re-attempted from scratch later:
    architecture even after a clean build, which reads as the current
    toolchain no longer fully supporting `armv7k` compilation for a
    package-based project, not a settings mistake.
+5. Retested #4 specifically under a second, older Xcode (16.4, installed
+   as a separate copy alongside the main install) in case it was an
+   Xcode-26-specific regression rather than a general limitation. First
+   attempt gave a *different* error — `SideoutEngine.swiftmodule is not
+   built for armv7k` — which looked like stale cached build products, so
+   it was retried after Product → Clean Build Folder, File → Packages →
+   Reset Package Caches, and a manual `rm -rf` of DerivedData. Same error
+   persisted through the fully clean rebuild. Conclusion: not an
+   Xcode-version quirk — SPM's local-package build path doesn't produce
+   an armv7k module slice on either toolchain generation tried.
 
-Four independent failures across wireless debugging, TestFlight, and the
-build toolchain is old hardware hitting the edges of current tooling
-support from multiple directions at once — not something to keep
-chasing. **The physical Series 3 is Simulator-verified only, and that's
-the accepted end state for this device**, not a gap to revisit unless
-Apple ships new tooling that changes the picture.
+Five independent failures now, across wireless debugging, TestFlight, and
+two separate Xcode versions hitting the same build wall — old hardware
+hitting the edges of current tooling support from multiple directions at
+once, confirmed rather than assumed. **The physical Series 3 is
+Simulator-verified only, and that's the accepted end state for this
+device**, not a gap to revisit unless Apple ships new tooling that
+changes the picture.
 
 **Exit:** a full game plays with the watch never needing a wake-tap, and
 the AOD state stays readable — tested on whichever generations of Watch

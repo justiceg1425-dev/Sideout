@@ -82,14 +82,18 @@ targets:
         WATCHOS_DEPLOYMENT_TARGET: "8.0"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: P853UYQ9G8
-        # RETEST (Xcode 16.4): armv7k previously failed SideoutEngine SPM
-        # resolution, but that was only ever tried under Xcode 26 -- an
-        # older toolchain (16.4) hasn't been ruled out. If this build
-        # fails the same way under 16.4, revert to the prior comment here
-        # (see git history) and stop -- don't leave this half-reverted.
-        ARCHS: "$(ARCHS_STANDARD) armv7k"
-        VALID_ARCHS: "arm64_32 armv7k"
-        ONLY_ACTIVE_ARCH: NO
+        # A Series 3 (S3 chip, armv7k) real device was attempted here and
+        # is not supported by this toolchain. Tried under two independent
+        # Xcode versions (26, then 16.4 with a fully clean rebuild --
+        # Reset Package Caches + wiped DerivedData) -- both fail the same
+        # way: the local SideoutEngine package's .swiftmodule never gets
+        # an armv7k slice. This isn't an Xcode-version quirk; it's SPM's
+        # local-package build path not producing armv7k module products
+        # on current toolchains generally. Deliberately NOT adding armv7k
+        # to ARCHS/VALID_ARCHS: it didn't get a Series 3 working under
+        # either Xcode version, and forcing it here risks breaking the
+        # arm64_32 build (Simulator, Series 4+) that already works fine.
+        # Series 3 is Simulator-verified only; see docs/IMPLEMENTATION_PLAN.md.
 
 schemes:
   Sideout:
