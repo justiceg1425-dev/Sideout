@@ -24,11 +24,34 @@ enum ReconnectBehavior: String, Codable, CaseIterable {
     }
 }
 
+enum AnnouncerVoice: String, Codable, CaseIterable {
+    case male
+    case female
+
+    var label: String {
+        switch self {
+        case .male: return "Umpire · Male"
+        case .female: return "Umpire · Female"
+        }
+    }
+
+    /// Subdirectory under AudioClips/ this voice's pre-rendered clips
+    /// live in -- see Scripts/generate_audio_clips.sh, which writes each
+    /// voice into its own folder rather than a flat AudioClips/ so both
+    /// can be bundled and switched between at runtime.
+    var folderName: String {
+        switch self {
+        case .male: return "Male"
+        case .female: return "Female"
+        }
+    }
+}
+
 /// Phone-only preferences: voice, announce mode, output, reconnect
 /// behaviour. `GameSettings` (format/players/points/cap/first-serve) is
 /// shared with the watch via `SettingsStore`; this is not.
 struct AppSettings: Codable, Equatable {
-    var voiceName: String = "Umpire · male"
+    var voice: AnnouncerVoice = .male
     var volume: Double = 0.8
     var announceMode: AnnounceMode = .everyRally
     var announceGamePoint: Bool = false

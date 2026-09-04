@@ -15,7 +15,10 @@ enum PhoneScreen: Equatable {
 final class PhoneAppModel: ObservableObject {
     @Published var screen: PhoneScreen = .setup
     @Published var appSettings: AppSettings = AppSettingsStore.load() {
-        didSet { AppSettingsStore.save(appSettings) }
+        didSet {
+            AppSettingsStore.save(appSettings)
+            announcer.voice = appSettings.voice
+        }
     }
     @Published private(set) var lastOutcome: RallyOutcome?
     @Published private(set) var showSideOutBand = false
@@ -29,6 +32,7 @@ final class PhoneAppModel: ObservableObject {
 
     init(connectivity: PhoneConnectivityManager) {
         self.connectivity = connectivity
+        announcer.voice = appSettings.voice // didSet doesn't fire for the initial value above
         connectivity.onUpdate = { [weak self] update in
             self?.handle(update)
         }

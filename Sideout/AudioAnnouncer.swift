@@ -4,18 +4,20 @@ import SideoutEngine
 /// Speaks from pre-rendered audio clips played in sequence — the vocabulary
 /// is closed (numbers 0-25 plus a handful of words), so callouts cannot be
 /// arbitrary sentences. Clips are expected at
-/// `AudioClips/<clipName>.caf` in the app bundle; see the README for how
-/// to record and add them (they are not included with this scaffold).
+/// `AudioClips/<voice.folderName>/<clipName>.caf` in the app bundle; see
+/// the README for how to record and add them (they are not included with
+/// this scaffold).
 @MainActor
 final class AudioAnnouncer {
     private var player: AVQueuePlayer?
     var volume: Float = 1.0
+    var voice: AnnouncerVoice = .male
 
     func speak(_ clips: [SpokenClip]) {
         stop()
         guard !clips.isEmpty else { return }
         let urls = clips.compactMap { clip in
-            Bundle.main.url(forResource: clip.clipName, withExtension: "caf", subdirectory: "AudioClips")
+            Bundle.main.url(forResource: clip.clipName, withExtension: "caf", subdirectory: "AudioClips/\(voice.folderName)")
         }
         guard urls.count == clips.count else { return } // missing clip(s); stay silent rather than guess
         let items = urls.map { AVPlayerItem(url: $0) }

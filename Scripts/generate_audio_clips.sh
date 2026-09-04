@@ -14,11 +14,19 @@
 # Linux CI/sandbox environment.
 #
 # Usage:
-#   ./Scripts/generate_audio_clips.sh [voice] [rate]
+#   ./Scripts/generate_audio_clips.sh <male|female> [voice] [rate]
 #
-# `voice` defaults to "Daniel" (a crisp, clear system voice — a decent
-# umpire feel). Run `say -v '?'` to list every voice installed on your
-# Mac. A few worth trying:
+# `kind` (male/female) picks which of the app's two switchable voices
+# you're generating — it controls the output folder
+# (AudioClips/Male/ or AudioClips/Female/), which is what
+# AnnouncerVoice.folderName looks up at runtime (see AppSettings.swift).
+# Run this once per kind to populate both, e.g.:
+#   ./Scripts/generate_audio_clips.sh male
+#   ./Scripts/generate_audio_clips.sh female
+#
+# `voice` is the actual macOS TTS voice and defaults to "Daniel" for
+# male, "Samantha" for female. Run `say -v '?'` to list every voice
+# installed on your Mac. A few worth trying:
 #   Male: Daniel, Aaron, Nathan, Evan
 #   Female: Samantha, Ava, Allison, Susan, Zoe
 # The higher-quality "Enhanced"/"Premium" variants of these need
@@ -42,10 +50,20 @@ if ! command -v say >/dev/null 2>&1; then
   exit 1
 fi
 
-VOICE="${1:-Daniel}"
-RATE="${2:-160}"
+KIND="${1:-}"
+case "$KIND" in
+  male)   FOLDER="Male";   DEFAULT_VOICE="Daniel" ;;
+  female) FOLDER="Female"; DEFAULT_VOICE="Samantha" ;;
+  *)
+    echo "usage: $0 <male|female> [voice] [rate]" >&2
+    exit 1
+    ;;
+esac
+
+VOICE="${2:-$DEFAULT_VOICE}"
+RATE="${3:-160}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OUT_DIR="$SCRIPT_DIR/../Sideout/AudioClips"
+OUT_DIR="$SCRIPT_DIR/../Sideout/AudioClips/$FOLDER"
 mkdir -p "$OUT_DIR"
 
 has_sox=false
@@ -68,7 +86,7 @@ clips=(
   "game_point:game point" "zero_zero_two:zero zero two"
 )
 
-echo "Generating ${#clips[@]} clips with voice '$VOICE' at ${RATE}wpm into $OUT_DIR ..."
+echo "Generating ${#clips[@]} clips ($KIND) with voice '$VOICE' at ${RATE}wpm into $OUT_DIR ..."
 
 for entry in "${clips[@]}"; do
   name="${entry%%:*}"
@@ -83,8 +101,9 @@ for entry in "${clips[@]}"; do
     mv "$tmp" "$out"
   fi
 
-  echo "  $name.caf"
+  echo "  $FOLDER/$name.caf"
 done
 
-echo "Done. Add $OUT_DIR to Xcode as a folder reference (blue folder icon,"
-echo "not a group) so AudioAnnouncer's subdirectory lookup resolves."
+echo "Done. AudioClips/ is already a durable Xcode folder reference (see"
+echo "project.yml) so this needs no manual Add Files step in Xcode — just"
+echo "rebuild."

@@ -59,7 +59,9 @@ struct SettingsView: View {
 
                 sectionHeader("VOICE")
                 GroupCard {
-                    row("Voice") { Text(appModel.appSettings.voiceName).foregroundStyle(PColor.secondary) }
+                    voiceRow(.male)
+                    divider
+                    voiceRow(.female)
                     divider
                     volumeRow
                     divider
@@ -147,6 +149,18 @@ struct SettingsView: View {
     private func toggleRow(_ label: String, isOn: Binding<Bool>) -> some View {
         row(label) {
             Toggle("", isOn: isOn).labelsHidden().tint(PColor.serve)
+        }
+    }
+
+    private func voiceRow(_ voice: AnnouncerVoice) -> some View {
+        Button {
+            appModel.appSettings.voice = voice
+        } label: {
+            row(voice.label) {
+                if appModel.appSettings.voice == voice {
+                    Image(systemName: "checkmark").foregroundStyle(PColor.serve)
+                }
+            }
         }
     }
 
