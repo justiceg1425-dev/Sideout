@@ -45,6 +45,7 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.9"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: P853UYQ9G8
 
@@ -83,6 +84,7 @@ targets:
         SWIFT_VERSION: "5.9"
         SDKROOT: watchos
         WATCHOS_DEPLOYMENT_TARGET: "8.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: P853UYQ9G8
         # A Series 3 (S3 chip, armv7k) real device was attempted here and

@@ -20,6 +20,9 @@ final class PhoneAppModel: ObservableObject {
     @Published private(set) var lastOutcome: RallyOutcome?
     @Published private(set) var showSideOutBand = false
     @Published private(set) var showSecondServerLabel = false
+    /// Purely cosmetic — see SplashView. Nothing here actually waits on
+    /// this; it just holds the splash on screen for a beat.
+    @Published private(set) var isLaunching = true
 
     let connectivity: PhoneConnectivityManager
     let announcer = AudioAnnouncer()
@@ -28,6 +31,10 @@ final class PhoneAppModel: ObservableObject {
         self.connectivity = connectivity
         connectivity.onUpdate = { [weak self] update in
             self?.handle(update)
+        }
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 900_000_000)
+            self?.isLaunching = false
         }
     }
 

@@ -42,7 +42,13 @@ struct PhoneRootView: View {
             case .settings:
                 SettingsView()
             }
+
+            if appModel.isLaunching {
+                SplashView()
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeOut(duration: 0.35), value: appModel.isLaunching)
         .onAppear {
             // Just answer the system's own orientation query correctly
             // from the start (AppDelegate.orientationLock feeds

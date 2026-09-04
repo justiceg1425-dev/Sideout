@@ -22,11 +22,18 @@ struct NewGameView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("NEW GAME")
-                .font(WType.header)
-                .tracking(1.2)
-                .foregroundStyle(WColor.chrome)
-                .padding(.bottom, 8)
+            HStack(spacing: 5) {
+                Image("SideoutMark")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 14, height: 14)
+                    .clipShape(RoundedRectangle(cornerRadius: 3.5))
+                Text("SIDEOUT")
+                    .font(.system(size: 13, weight: .bold))
+                    .tracking(1.0)
+                    .foregroundStyle(.white)
+            }
+            .padding(.bottom, 8)
 
             startCard
 
@@ -55,6 +62,18 @@ struct NewGameView: View {
         .padding(.horizontal, 12)
         .padding(.bottom, 14)
         .background(WColor.bg)
+        // `draft` is seeded once at init from disk, so it never sees a
+        // settings push that arrives while this screen is already up
+        // (e.g. the phone editing team names before the watch starts a
+        // game). Team names aren't cycled here — the watch has no UI for
+        // them — so it's safe to always mirror the controller's copy
+        // rather than treat it as a local edit to preserve. Single-value
+        // closure form deliberately (not the newer two-value one) — that
+        // overload needs watchOS 10, and this target's floor is 8.0 for
+        // Series 3.
+        .onChange(of: controller.settings.teamNames) { newNames in
+            draft.teamNames = newNames
+        }
     }
 
     private var startCard: some View {
