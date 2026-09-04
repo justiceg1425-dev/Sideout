@@ -16,6 +16,8 @@ struct GameOverView: View {
                 .font(WType.finalScore)
                 .tracking(-2)
                 .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .padding(.top, 12)
 
             Text("\(controller.elapsedMinutes) min")

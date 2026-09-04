@@ -165,6 +165,12 @@ struct ScoringView: View {
             Text("\(s?[team] ?? 0)")
                 .font(WType.score(isLuminanceReduced ? .semibold : .bold))
                 .monospacedDigit()
+                .lineLimit(1)
+                // A fixed 96pt fits one digit fine but clips two (hard-cap
+                // games run up to 25) -- shrink-to-fit instead of a hand
+                // picked smaller size for double digits, so it can't clip
+                // at any value rather than just the common ones tested.
+                .minimumScaleFactor(0.5)
                 .foregroundStyle(digitColor)
                 // Roll transition approximates the spec's 140 ms vertical
                 // roll + scale punch; exact spring tuning is a device pass.
