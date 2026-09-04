@@ -17,11 +17,18 @@ struct SetupView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("New game")
-                    .font(PType.largeTitle)
-                    .tracking(-0.6)
-                    .foregroundStyle(.white)
-                    .padding(.bottom, 20)
+                HStack(spacing: 10) {
+                    Image("SideoutMark")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 34, height: 34)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    Text("SIDEOUT")
+                        .font(PType.largeTitle)
+                        .tracking(-0.6)
+                        .foregroundStyle(.white)
+                }
+                .padding(.bottom, 20)
 
                 startCard
                     .padding(.bottom, 26)

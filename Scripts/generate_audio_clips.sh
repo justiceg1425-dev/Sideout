@@ -14,13 +14,21 @@
 # Linux CI/sandbox environment.
 #
 # Usage:
-#   ./Scripts/generate_audio_clips.sh [voice]
+#   ./Scripts/generate_audio_clips.sh [voice] [rate]
 #
 # `voice` defaults to "Daniel" (a crisp, clear system voice — a decent
 # umpire feel). Run `say -v '?'` to list every voice installed on your
-# Mac. A few worth trying: Daniel, Aaron, Nathan, Evan — the higher-quality
-# "Enhanced"/"Premium" variants of these need downloading first via
-# System Settings > Accessibility > Spoken Content > System Voice.
+# Mac. A few worth trying:
+#   Male: Daniel, Aaron, Nathan, Evan
+#   Female: Samantha, Ava, Allison, Susan, Zoe
+# The higher-quality "Enhanced"/"Premium" variants of these need
+# downloading first via System Settings > Accessibility > Spoken
+# Content > System Voice.
+#
+# `rate` is words-per-minute, defaulting to 160 (a bit slower than
+# `say`'s own default of ~175-200 depending on voice) so callouts read
+# less rushed mid-rally. Drop it lower (say, 145) for an even more
+# deliberate pace, or back up to ~180 for something snappier.
 #
 # Optional: install sox (`brew install sox`) to trim silence down to the
 # brief's ~180-320ms target. Without it, clips keep `say`'s default
@@ -35,6 +43,7 @@ if ! command -v say >/dev/null 2>&1; then
 fi
 
 VOICE="${1:-Daniel}"
+RATE="${2:-160}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT_DIR="$SCRIPT_DIR/../Sideout/AudioClips"
 mkdir -p "$OUT_DIR"
@@ -59,14 +68,14 @@ clips=(
   "game_point:game point" "zero_zero_two:zero zero two"
 )
 
-echo "Generating ${#clips[@]} clips with voice '$VOICE' into $OUT_DIR ..."
+echo "Generating ${#clips[@]} clips with voice '$VOICE' at ${RATE}wpm into $OUT_DIR ..."
 
 for entry in "${clips[@]}"; do
   name="${entry%%:*}"
   text="${entry#*:}"
   out="$OUT_DIR/$name.caf"
 
-  say -v "$VOICE" --file-format=caff --data-format=LEI16@22050 -o "$out" "$text"
+  say -v "$VOICE" -r "$RATE" --file-format=caff --data-format=LEI16@22050 -o "$out" "$text"
 
   if $has_sox; then
     tmp="$OUT_DIR/$name.trimmed.caf"
