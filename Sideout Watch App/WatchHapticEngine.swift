@@ -20,4 +20,12 @@ struct WatchHapticEngine {
     func playScrubTick(atBoundary: Bool) {
         WKInterfaceDevice.current().play(atBoundary ? .stop : .click)
     }
+
+    /// Distinct from all five patterns above — signals "that didn't
+    /// count" for the instant one-detent undo (see
+    /// GameSessionController.instantUndoLastRally), not to be confused
+    /// with `.retry`'s side-out meaning.
+    func playInstantUndo() {
+        WKInterfaceDevice.current().play(.failure)
+    }
 }

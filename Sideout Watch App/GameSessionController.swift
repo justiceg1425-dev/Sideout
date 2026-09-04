@@ -112,6 +112,24 @@ final class GameSessionController: ObservableObject {
 
     // MARK: - Crown scrubbing
 
+    /// One-motion "oops, wrong side" fix: removes the last rally
+    /// immediately, with no separate tap to commit -- unlike
+    /// `commitScrubAsLive`, which only applies a truncation that scrub
+    /// preview has already dialed in. Only for the very first crown
+    /// detent back from a truly live state; see
+    /// ScoringView.handleCrownChange for why that distinction matters
+    /// (further detents still go through the safer preview+tap path,
+    /// so casually overshooting the crown can't silently erase several
+    /// real points at once).
+    func instantUndoLastRally() {
+        guard let game, game.rallyCount > 0, !isScrubbing else { return }
+        let winners = Array(game.rallyWinners.dropLast())
+        self.game = Game(settings: game.settings, rallyWinners: winners)
+        haptics.playInstantUndo()
+        refresh()
+        sync()
+    }
+
     /// `position` is the crown's bound value: 0 = live, increasing = further
     /// back in history. Called on every crown change; internally clamps and
     /// fires the per-detent / boundary haptics.

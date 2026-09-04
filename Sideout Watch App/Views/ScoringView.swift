@@ -11,6 +11,7 @@ struct ScoringView: View {
     @State private var crownPosition: Double = 0
     @State private var scrubIdleTask: Task<Void, Never>?
     @State private var pressStart: Date?
+    @State private var lastInstantUndoAt: Date?
 
     private var state: GameState? { controller.currentState }
     private var settings: GameSettings { controller.settings }
@@ -99,7 +100,31 @@ struct ScoringView: View {
         if clamped != crownPosition {
             crownPosition = clamped
         }
-        controller.setScrubPosition(Int(clamped.rounded()))
+
+        let rounded = Int(clamped.rounded())
+
+        // The very first detent back from a truly live state instantly
+        // undoes the last rally instead of entering preview mode — see
+        // GameSessionController.instantUndoLastRally. crownPosition is
+        // reset to 0 right after, same pattern already used elsewhere
+        // (onChange(of: isScrubbing) below) when a scrub concludes, so
+        // the crown's frame of reference matches the new live state.
+        // The debounce guards against that reset itself re-triggering
+        // this branch if the system reports another value before the
+        // physical crown has caught up -- genuinely unverified without
+        // a real watch; tighten or remove if it feels laggy or, worse,
+        // double-fires on-device.
+        if !controller.isScrubbing, rounded == 1 {
+            let now = Date()
+            if lastInstantUndoAt.map({ now.timeIntervalSince($0) > 0.3 }) ?? true {
+                lastInstantUndoAt = now
+                controller.instantUndoLastRally()
+                crownPosition = 0
+            }
+            return
+        }
+
+        controller.setScrubPosition(rounded)
         armScrubIdleTimeout()
     }
 
