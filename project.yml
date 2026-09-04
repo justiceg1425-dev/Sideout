@@ -22,6 +22,18 @@ targets:
     platform: iOS
     sources:
       - path: Sideout
+        excludes:
+          - "AudioClips/**"
+      # A real Xcode folder reference (blue folder, not a yellow group) --
+      # declared here so it survives every `xcodegen generate` instead of
+      # depending on a manual Add Files click in Xcode, which gets wiped
+      # out the next time the project regenerates. `optional: true`
+      # because this folder doesn't exist until
+      # Scripts/generate_audio_clips.sh has been run once (Phase 4);
+      # xcodegen would otherwise fail to generate at all before that.
+      - path: Sideout/AudioClips
+        type: folder
+        optional: true
       - path: Shared
     dependencies:
       - package: SideoutEngine

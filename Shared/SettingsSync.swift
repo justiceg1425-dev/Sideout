@@ -14,10 +14,17 @@ import SideoutEngine
 /// to influence the next game without pushing settings across first.
 public struct SettingsSync: Codable, Equatable {
     public var settings: GameSettings
+    /// True when this push should start a game immediately on the watch,
+    /// not just stash settings for later — set when the phone's own
+    /// "Start game" buttons are what triggered the push, so both devices
+    /// end up in a game together instead of the watch needing a separate
+    /// manual tap.
+    public var startNow: Bool
     public var sentAt: Date
 
-    public init(settings: GameSettings, sentAt: Date = Date()) {
+    public init(settings: GameSettings, startNow: Bool = false, sentAt: Date = Date()) {
         self.settings = settings
+        self.startNow = startNow
         self.sentAt = sentAt
     }
 

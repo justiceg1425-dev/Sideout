@@ -11,10 +11,11 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
     @Published private(set) var isReachable = false
 
     /// Fires when the phone pushes edited settings (team names, above
-    /// all) via `SettingsSync`. The watch is still the only thing that
-    /// can actually *start* a game, but this is how phone-only settings
-    /// reach it beforehand.
-    var onSettingsReceived: ((GameSettings) -> Void)?
+    /// all) via `SettingsSync`. The second value is `startNow` — true
+    /// when the phone's own "Start game" button is what triggered this,
+    /// meaning the watch should start playing immediately rather than
+    /// just stash the settings for a later manual start.
+    var onSettingsReceived: ((GameSettings, Bool) -> Void)?
 
     private let session: WCSession? = WCSession.isSupported() ? .default : nil
 
@@ -42,6 +43,6 @@ extension WatchConnectivityManager: WCSessionDelegate {
 
     nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         guard let sync = try? SettingsSync.from(dictionary: applicationContext) else { return }
-        Task { @MainActor in self.onSettingsReceived?(sync.settings) }
+        Task { @MainActor in self.onSettingsReceived?(sync.settings, sync.startNow) }
     }
 }

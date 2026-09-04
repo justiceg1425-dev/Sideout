@@ -2,11 +2,13 @@ import SwiftUI
 import SideoutEngine
 
 /// Mirrors the watch's new-game options and adds what the watch shouldn't
-/// carry (team names). The phone never originates a rally — this screen
-/// edits and previews `GameSettings` and moves to the Scoreboard, but
-/// actual play is always started from the watch; there is no
-/// phone-to-watch control channel in this app, by design (see the
-/// handoff's state-management section: the watch alone decides).
+/// carry (team names). The phone never originates a *rally* -- the watch
+/// is still the only thing that records scoring input -- but both Start
+/// buttons here do push a "start now" signal alongside settings
+/// (SettingsSync.startNow), so tapping Start on the phone starts the
+/// watch's game too rather than requiring a separate tap there. The
+/// watch still guards against this clobbering a game already in
+/// progress (see GameSessionController.applyReceivedSettings).
 struct SetupView: View {
     @EnvironmentObject private var appModel: PhoneAppModel
     @EnvironmentObject private var connectivity: PhoneConnectivityManager
@@ -69,7 +71,7 @@ struct SetupView: View {
 
                 Button {
                     SettingsStore.save(draft)
-                    appModel.pushSettingsToWatch(draft)
+                    appModel.pushSettingsToWatch(draft, startNow: true)
                     appModel.startWatchingScoreboard()
                 } label: {
                     Text("Start game")
@@ -100,7 +102,7 @@ struct SetupView: View {
     private var startCard: some View {
         Button {
             SettingsStore.save(draft)
-            appModel.pushSettingsToWatch(draft)
+            appModel.pushSettingsToWatch(draft, startNow: true)
             appModel.startWatchingScoreboard()
         } label: {
             VStack(alignment: .leading, spacing: 4) {

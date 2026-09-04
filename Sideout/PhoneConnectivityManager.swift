@@ -27,6 +27,14 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
     @Published private(set) var isReachable = false
 
     var onUpdate: ((Update) -> Void)?
+    /// Fires when the watch starts a fresh game (0 rallies) — separate
+    /// from `onUpdate`/`RallyOutcome`, which describe in-game events, not
+    /// "a game just began." This is what lets the phone jump to the
+    /// scoreboard the instant the watch starts, instead of only
+    /// following once the first rally lands (see the old `guard newCount
+    /// > previousCount` in `apply` below — a fresh game starts at 0,
+    /// which never satisfies that on its own).
+    var onGameStarted: (() -> Void)?
 
     private let session: WCSession? = WCSession.isSupported() ? .default : nil
     private var staleTimer: Timer?
@@ -62,10 +70,11 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
     /// the only thing the phone can set that the watch can't) to the
     /// watch. This is this session's own outgoing application context;
     /// it doesn't collide with the watch's outgoing context that
-    /// `ConnectivityMessage` arrives through.
-    func sendSettings(_ settings: GameSettings) {
+    /// `ConnectivityMessage` arrives through. `startNow` tells the watch
+    /// to begin playing immediately rather than just stash the settings.
+    func sendSettings(_ settings: GameSettings, startNow: Bool = false) {
         guard let session, session.activationState == .activated else { return }
-        guard let dict = try? SettingsSync(settings: settings).asDictionary() else { return }
+        guard let dict = try? SettingsSync(settings: settings, startNow: startNow).asDictionary() else { return }
         try? session.updateApplicationContext(dict)
     }
 
@@ -85,6 +94,7 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
 
     private func apply(_ message: ConnectivityMessage) {
         let previousState = game?.state
+        let hadPreviousGame = game != nil
         let previousCount = game?.rallyCount ?? 0
 
         let newGame = Game(settings: message.settings, rallyWinners: message.rallyWinners)
@@ -92,6 +102,16 @@ final class PhoneConnectivityManager: NSObject, ObservableObject {
         currentState = newGame.state
         lastHeard = Date()
         isStale = false
+
+        // A fresh game starts at 0 rallies, which never satisfies
+        // `newCount > previousCount` below on its own -- without this,
+        // the watch starting a game never moved the phone off Setup
+        // until the first point landed. Skip firing on a redundant
+        // redelivery of the same already-current fresh game (previous
+        // count was already 0).
+        if message.rallyWinners.isEmpty, !hadPreviousGame || previousCount != 0 {
+            onGameStarted?()
+        }
 
         guard let previousState else { return }
         let newCount = message.rallyWinners.count

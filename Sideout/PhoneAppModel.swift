@@ -32,6 +32,9 @@ final class PhoneAppModel: ObservableObject {
         connectivity.onUpdate = { [weak self] update in
             self?.handle(update)
         }
+        connectivity.onGameStarted = { [weak self] in
+            self?.screen = .scoreboard
+        }
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 900_000_000)
             self?.isLaunching = false
@@ -47,9 +50,12 @@ final class PhoneAppModel: ObservableObject {
 
     /// Pushes settings edited on the phone's Setup screen (team names
     /// above all — the watch has no way to set those itself) to the
-    /// watch, so the *next* game it starts picks them up.
-    func pushSettingsToWatch(_ settings: GameSettings) {
-        connectivity.sendSettings(settings)
+    /// watch. `startNow` (set from Setup's own "Start" buttons) tells
+    /// the watch to begin playing immediately, so both devices land in
+    /// the same game together instead of the watch needing a separate
+    /// manual tap.
+    func pushSettingsToWatch(_ settings: GameSettings, startNow: Bool = false) {
+        connectivity.sendSettings(settings, startNow: startNow)
     }
 
     private func handle(_ update: PhoneConnectivityManager.Update) {

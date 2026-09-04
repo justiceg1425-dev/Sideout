@@ -45,8 +45,8 @@ final class GameSessionController: ObservableObject {
 
     init(connectivity: WatchConnectivityManager) {
         self.connectivity = connectivity
-        connectivity.onSettingsReceived = { [weak self] settings in
-            self?.applyReceivedSettings(settings)
+        connectivity.onSettingsReceived = { [weak self] settings, startNow in
+            self?.applyReceivedSettings(settings, startNow: startNow)
         }
     }
 
@@ -55,11 +55,17 @@ final class GameSessionController: ObservableObject {
     /// Settings pushed from the phone's Setup screen (team names, above
     /// all — the watch has no UI of its own to set those). Never
     /// overwrites a game already in progress; it only affects what the
-    /// *next* game starts with.
-    func applyReceivedSettings(_ settings: GameSettings) {
+    /// *next* game starts with. `startNow` means the phone's own "Start
+    /// game" button triggered this push — start playing immediately so
+    /// both devices land in the same game together, instead of leaving
+    /// the watch sitting on NewGameView needing a separate manual tap.
+    func applyReceivedSettings(_ settings: GameSettings, startNow: Bool) {
         guard game == nil else { return }
         self.settings = settings
         SettingsStore.save(settings)
+        if startNow {
+            startGame(with: settings)
+        }
     }
 
     func startGame(with settings: GameSettings) {
