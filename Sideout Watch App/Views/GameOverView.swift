@@ -18,7 +18,7 @@ struct GameOverView: View {
                 .foregroundStyle(.white)
                 .padding(.top, 12)
 
-            Text("\(controller.workout.elapsedMinutes) min · saved to Health")
+            Text("\(controller.elapsedMinutes) min")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(WColor.chrome)
                 .padding(.top, 6)

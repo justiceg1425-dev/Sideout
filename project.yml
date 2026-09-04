@@ -62,14 +62,17 @@ targets:
         WKApplication: true
         WKRunsIndependentlyOfCompanionApp: true
         WKCompanionAppBundleIdentifier: com.justiceg.sideout
-        NSHealthShareUsageDescription: "Sideout logs each game as a workout so you can see it in Health."
-        NSHealthUpdateUsageDescription: "Sideout logs each game as a workout so you can see it in Health."
+        # No HealthKit entitlement here deliberately -- it requires a paid
+        # Apple Developer Program membership, and this project runs on a
+        # free/personal team (DEVELOPMENT_TEAM below). It previously used
+        # HKWorkoutSession both to log games to Health and to keep the
+        # watch screen frontmost through wrist drops; both are gone now.
+        # GameSessionController tracks elapsed time itself instead
+        # (wall-clock, no Health dependency) for GameOverView's "X min"
+        # line. If you get a paid membership later, re-adding HealthKit
+        # for the wake-lock behavior is a reasonable thing to revisit.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-    entitlements:
-      path: "Sideout Watch App/SideoutWatchApp.entitlements"
-      properties:
-        com.apple.developer.healthkit: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.justiceg.sideout.watchkitapp

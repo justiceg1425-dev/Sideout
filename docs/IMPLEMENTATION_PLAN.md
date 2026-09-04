@@ -76,11 +76,19 @@ robotic mid-rally.
 
 Simulator can't tell you if this actually works: Digital Crown scrub
 direction/feel, the three distinct haptic patterns, Double Tap gesture
-(Series 9+ only — inert on older hardware, not broken), always-on display
-legibility wrist-down (also hardware-dependent — no AOD panel on Series 3
-or 4), and whether `HKWorkoutSession` actually keeps the app frontmost
-through a wrist-drop. Tune the digit roll/punch animation here too — the
+(Series 9+ only — inert on older hardware, not broken), and always-on
+display legibility wrist-down (also hardware-dependent — no AOD panel on
+Series 3 or 4). Tune the digit roll/punch animation here too — the
 handoff deliberately left exact spring values to this pass.
+
+`HKWorkoutSession` — originally meant to keep the app frontmost through a
+wrist-drop, plus log games to Health — was removed entirely on a real
+device: HealthKit requires a paid Apple Developer Program membership,
+and this project runs on a free Personal Team, which can't provision
+that entitlement (real installs failed with "integrity could not be
+verified"). There's no wake-lock substitute in place — the watch can
+dim/sleep mid-game like any normal app now. Revisit if a paid membership
+is added later.
 
 The watch target's deployment target is 8.0 so the *code* supports an
 Apple Watch Series 3 as well as newer models — watchOS 9 dropped Series 3

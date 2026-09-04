@@ -123,8 +123,19 @@ deliberate pass:
   and Settings screens. Orientation-lock-per-screen is one of the fussier
   corners of UIKit/SwiftUI interop; verify it actually rotates on a
   device.
-- **HealthKit workout type.** Uses `HKWorkoutActivityType.pickleball` when
-  available (watchOS 9+), falling back to `.racquetSports` on watchOS 8.
+- **No HealthKit.** The original design used `HKWorkoutSession` for two
+  things: logging each game to Health, and keeping the watch screen
+  frontmost through wrist drops (a workout session has no background time
+  budget while recording). It was removed — HealthKit requires a paid
+  Apple Developer Program membership, and this project runs on a free
+  Personal Team, which can't provision that entitlement at all (real
+  devices fail to install with "integrity could not be verified").
+  `GameSessionController` now tracks elapsed time itself for the
+  game-over screen's "X min" line, but there's no substitute for the
+  wake-lock behavior — the watch can dim/sleep mid-game like any normal
+  app. If you get a paid membership later, re-adding HealthKit (or
+  swapping in `WKExtendedRuntimeSession`, which doesn't need it) for that
+  wake-lock is worth revisiting.
 - **watchOS 8 / Apple Watch Series 3 support.** The watch target's
   deployment target is 8.0 specifically so this can install on a Series 3
   (watchOS 9 dropped Series 3 entirely, so this is as low as it can go).

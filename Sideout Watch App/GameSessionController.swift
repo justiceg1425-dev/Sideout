@@ -31,13 +31,20 @@ final class GameSessionController: ObservableObject {
     }
 
     let connectivity: WatchConnectivityManager
-    let workout: WorkoutManager
     private let haptics = WatchHapticEngine()
+    private var gameStartDate: Date?
 
-    init(connectivity: WatchConnectivityManager, workout: WorkoutManager) {
+    /// No longer tied to a HealthKit workout (that required a paid Apple
+    /// Developer account the free/personal team here doesn't have) — just
+    /// wall-clock time since `startGame`, for the "X min" line on
+    /// GameOverView.
+    var elapsedMinutes: Int {
+        guard let gameStartDate else { return 0 }
+        return max(0, Int(Date().timeIntervalSince(gameStartDate) / 60))
+    }
+
+    init(connectivity: WatchConnectivityManager) {
         self.connectivity = connectivity
-        self.workout = workout
-        workout.requestAuthorization()
         connectivity.onSettingsReceived = { [weak self] settings in
             self?.applyReceivedSettings(settings)
         }
@@ -62,7 +69,7 @@ final class GameSessionController: ObservableObject {
         scrubOffset = nil
         lastOutcome = nil
         screen = .scoring
-        workout.start()
+        gameStartDate = Date()
         refresh()
         sync()
     }
@@ -81,7 +88,6 @@ final class GameSessionController: ObservableObject {
         refresh()
         sync()
         if game.state.winner != nil {
-            workout.stop()
             screen = .gameOver
         }
     }
@@ -123,7 +129,6 @@ final class GameSessionController: ObservableObject {
     // MARK: - End game menu
 
     func endGame() {
-        workout.stop()
         game = nil
         currentState = nil
         scrubOffset = nil

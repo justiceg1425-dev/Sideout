@@ -3,15 +3,12 @@ import SwiftUI
 @main
 struct SideoutWatchApp: App {
     @StateObject private var connectivity: WatchConnectivityManager
-    @StateObject private var workout: WorkoutManager
     @StateObject private var controller: GameSessionController
 
     init() {
         let connectivity = WatchConnectivityManager()
-        let workout = WorkoutManager()
         _connectivity = StateObject(wrappedValue: connectivity)
-        _workout = StateObject(wrappedValue: workout)
-        _controller = StateObject(wrappedValue: GameSessionController(connectivity: connectivity, workout: workout))
+        _controller = StateObject(wrappedValue: GameSessionController(connectivity: connectivity))
     }
 
     var body: some Scene {
