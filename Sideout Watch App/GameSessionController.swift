@@ -32,15 +32,7 @@ final class GameSessionController: ObservableObject {
 
     let connectivity: WatchConnectivityManager
     private let haptics = WatchHapticEngine()
-    private let extendedRuntime = ExtendedRuntimeManager()
     private var gameStartDate: Date?
-
-    /// Opt-in, off by default -- see ExtendedRuntimeManager for why this
-    /// isn't just always-on the way HKWorkoutSession used to be.
-    @Published var keepAwakeEnabled: Bool = UserDefaults.standard.bool(forKey: GameSessionController.keepAwakeKey) {
-        didSet { UserDefaults.standard.set(keepAwakeEnabled, forKey: GameSessionController.keepAwakeKey) }
-    }
-    private static let keepAwakeKey = "com.sideout.watch.keepAwakeEnabled"
 
     /// No longer tied to a HealthKit workout (that required a paid Apple
     /// Developer account the free/personal team here doesn't have) — just
@@ -84,9 +76,6 @@ final class GameSessionController: ObservableObject {
         lastOutcome = nil
         screen = .scoring
         gameStartDate = Date()
-        if keepAwakeEnabled {
-            extendedRuntime.start()
-        }
         refresh()
         sync()
     }
@@ -105,7 +94,6 @@ final class GameSessionController: ObservableObject {
         refresh()
         sync()
         if game.state.winner != nil {
-            extendedRuntime.stop()
             screen = .gameOver
         }
     }
@@ -165,7 +153,6 @@ final class GameSessionController: ObservableObject {
     // MARK: - End game menu
 
     func endGame() {
-        extendedRuntime.stop()
         game = nil
         currentState = nil
         scrubOffset = nil

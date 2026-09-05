@@ -39,6 +39,18 @@ final class PhoneAppModel: ObservableObject {
         connectivity.onGameStarted = { [weak self] in
             self?.screen = .scoreboard
         }
+        runSplash()
+    }
+
+    /// Runs the splash for its ~0.9s beat. Called from init (true cold
+    /// launch) and again from PhoneRootView whenever the app returns to
+    /// active from a fully backgrounded state -- SwiftUI keeps this same
+    /// PhoneAppModel instance alive across a background/foreground cycle
+    /// (no re-init), so without this the splash would only ever show
+    /// once per process lifetime, not on every actual "open" a user
+    /// perceives.
+    func runSplash() {
+        isLaunching = true
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 900_000_000)
             self?.isLaunching = false

@@ -30,6 +30,7 @@ struct SideoutApp: App {
 struct PhoneRootView: View {
     @EnvironmentObject private var appModel: PhoneAppModel
     @EnvironmentObject private var connectivity: PhoneConnectivityManager
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
@@ -66,6 +67,15 @@ struct PhoneRootView: View {
         }
         .onChange(of: appModel.appSettings.keepScreenAwake) { _, keepAwake in
             UIApplication.shared.isIdleTimerDisabled = keepAwake && appModel.screen == .scoreboard
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            // Only a real return from fully backgrounded -- .inactive is
+            // also hit for transient interruptions (Control Center, a
+            // notification banner, the app switcher) that shouldn't
+            // replay the splash.
+            if oldPhase == .background, newPhase == .active {
+                appModel.runSplash()
+            }
         }
     }
 

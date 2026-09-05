@@ -55,13 +55,6 @@ struct NewGameView: View {
                 settingsRow(label: "First serve", value: draft.firstServer == .a ? "Us" : "Them") {
                     draft.firstServer = draft.firstServer == .a ? .b : .a
                 }
-                // Experimental -- see ExtendedRuntimeManager. Controller-
-                // level (not part of `draft`/GameSettings) since it's a
-                // device preference, not a game rule, and persists across
-                // games rather than resetting with "same as last time."
-                settingsRow(label: "Keep awake", value: controller.keepAwakeEnabled ? "On" : "Off") {
-                    controller.keepAwakeEnabled.toggle()
-                }
             }
             .padding(.horizontal, 4)
         }

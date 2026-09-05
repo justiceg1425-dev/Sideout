@@ -133,9 +133,11 @@ deliberate pass:
   `GameSessionController` now tracks elapsed time itself for the
   game-over screen's "X min" line, but there's no substitute for the
   wake-lock behavior — the watch can dim/sleep mid-game like any normal
-  app. If you get a paid membership later, re-adding HealthKit (or
-  swapping in `WKExtendedRuntimeSession`, which doesn't need it) for that
-  wake-lock is worth revisiting.
+  app. `WKExtendedRuntimeSession` (no paid account needed) was tried as
+  a replacement and then deliberately removed — no noticeable
+  wake-lock benefit on real hardware, just extra complexity. If you get
+  a paid membership later, re-adding HealthKit for the wake-lock is
+  worth revisiting; a plain extended runtime session isn't.
 - **watchOS 8 / Apple Watch Series 3 support.** The watch target's
   deployment target is 8.0 specifically so this can install on a Series 3
   (watchOS 9 dropped Series 3 entirely, so this is as low as it can go).
