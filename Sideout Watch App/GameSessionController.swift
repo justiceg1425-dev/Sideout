@@ -37,8 +37,8 @@ final class GameSessionController: ObservableObject {
 
     /// Opt-in, off by default -- see ExtendedRuntimeManager for why this
     /// isn't just always-on the way HKWorkoutSession used to be.
-    @Published var keepAwakeEnabled: Bool = UserDefaults.standard.bool(forKey: Self.keepAwakeKey) {
-        didSet { UserDefaults.standard.set(keepAwakeEnabled, forKey: Self.keepAwakeKey) }
+    @Published var keepAwakeEnabled: Bool = UserDefaults.standard.bool(forKey: GameSessionController.keepAwakeKey) {
+        didSet { UserDefaults.standard.set(keepAwakeEnabled, forKey: GameSessionController.keepAwakeKey) }
     }
     private static let keepAwakeKey = "com.sideout.watch.keepAwakeEnabled"
 
